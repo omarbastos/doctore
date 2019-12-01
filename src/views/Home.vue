@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
-    <uc-reloj :sec="up" @end="alertando"></uc-reloj>
+    <uc-reloj ref="up" :sec="5" @end="alertando"></uc-reloj>
   </div>
 </template>
 
