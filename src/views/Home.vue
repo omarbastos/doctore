@@ -1,18 +1,21 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <img alt="Vue logo" src="../assets/logo.png" />
+    <uc-reloj :sec="up" @end="alertando"></uc-reloj>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import UcReloj from "../components/UcReloj.vue";
 export default {
-  name: 'home',
-  components: {
-    HelloWorld
+  name: "home",
+  data: () => ({}),
+  components: { UcReloj },
+  methods: {
+    alertando() {
+      alert("Up finalizado");
+    }
   }
-}
+};
 </script>
