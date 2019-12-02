@@ -16,8 +16,8 @@
         color="purple"
         v-if="!timer"
         @click="startTimer"
-        ><v-icon>mdi-food</v-icon>
-        ALMUERZO
+      >
+        <v-icon>mdi-food</v-icon>ALMUERZO
       </v-btn>
       <!--     Pause Timer -->
       <v-btn
@@ -27,10 +27,9 @@
         x-large
         color="red"
         v-if="timer"
-        @click="pauseTimer"
+        @click="stopTimer"
       >
-        <v-icon>mdi-food-off</v-icon>
-        DETENER ALMUERZO
+        <v-icon>mdi-food-off</v-icon>DETENER ALMUERZO
       </v-btn>
     </div>
   </div>
@@ -54,6 +53,7 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
+      this.$emit("ai-start");
     },
     pauseTimer: function() {
       clearInterval(this.timer);
@@ -68,6 +68,7 @@ export default {
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
       this.disableUP = true;
+      this.$emit("ai-stop");
     },
     resetTimer: function() {
       this.totalTime = 25 * 60;

@@ -17,8 +17,7 @@
         v-if="!timer"
         @click="startTimer"
       >
-        <v-icon>mdi-coffee</v-icon>
-        CAFE 2
+        <v-icon>mdi-coffee</v-icon>CAFE 2
       </v-btn>
       <!--     Pause Timer -->
       <v-btn
@@ -28,10 +27,9 @@
         x-large
         color="red"
         v-if="timer"
-        @click="pauseTimer"
+        @click="stopTimer"
       >
-        <v-icon>mdi-coffee-off</v-icon>
-        DETENER CAFE 2
+        <v-icon>mdi-coffee-off</v-icon>DETENER CAFE 2
       </v-btn>
     </div>
   </div>
@@ -55,6 +53,7 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
+      this.$emit("cafe2-start");
     },
     pauseTimer: function() {
       clearInterval(this.timer);
@@ -69,6 +68,7 @@ export default {
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
       this.disableUP = true;
+      this.$emit("cafe2-stop");
     },
     resetTimer: function() {
       this.totalTime = 25 * 60;

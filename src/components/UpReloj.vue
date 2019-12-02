@@ -17,8 +17,7 @@
         v-if="!timer"
         @click="startTimer"
       >
-        <v-icon>mdi-toilet</v-icon>
-        URGENCIA PERSONAL
+        <v-icon>mdi-toilet</v-icon>URGENCIA PERSONAL
       </v-btn>
       <!--     Pause Timer -->
       <v-btn
@@ -30,8 +29,7 @@
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon>mdi-toilet</v-icon>
-        PAUSAR URGENCIA PERSONAL
+        <v-icon>mdi-toilet</v-icon>PAUSAR URGENCIA PERSONAL
       </v-btn>
     </div>
   </div>
@@ -55,12 +53,14 @@ export default {
       this.timer = setInterval(() => this.countdown(), 1000);
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
+      this.$emit("up-start");
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
+      this.$emit("up-pause");
     },
     stopTimer: function() {
       clearInterval(this.timer);

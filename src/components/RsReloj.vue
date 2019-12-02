@@ -17,8 +17,7 @@
         v-if="!timer"
         @click="startTimer"
       >
-        <v-icon> mdi-account-tie</v-icon>
-        REUNION SUPERVISOR
+        <v-icon>mdi-account-tie</v-icon>REUNION SUPERVISOR
       </v-btn>
       <!--     Pause Timer -->
       <v-btn
@@ -30,8 +29,7 @@
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon> mdi-account-tie</v-icon>
-        DETENER RS
+        <v-icon>mdi-account-tie</v-icon>DETENER RS
       </v-btn>
     </div>
   </div>
@@ -55,12 +53,14 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
+      this.$emit("rs-start");
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
+      this.$emit("rs-stop");
     },
     stopTimer: function() {
       clearInterval(this.timer);
