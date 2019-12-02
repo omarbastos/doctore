@@ -1,5 +1,5 @@
 <template>
-  <div class="home my-4">
+  <div class="agente my-4">
     <div class="row">
       <div :class="classUp">
         <up-reloj
@@ -7,23 +7,6 @@
           @up-start="startUp"
           @up-ended="flagUp"
         ></up-reloj>
-      </div>
-      <div :class="classAi">
-        <ai-reloj
-          @ai-start="startAi"
-          @ai-stop="stopAi"
-          @ai-ended="flagAi"
-        ></ai-reloj>
-      </div>
-      <div :class="classRs">
-        <rs-reloj @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
-      </div>
-      <div :class="classCf1">
-        <cf1-reloj
-          @cafe1-stop="stopCafe1"
-          @cafe1-start="startCafe1"
-          @cf1-ended="flagCf1"
-        ></cf1-reloj>
       </div>
       <div :class="classHora">
         <div class="display-1 white--text text-center">
@@ -35,6 +18,24 @@
           </div>
         </div>
       </div>
+      <div :class="classRs">
+        <rs-reloj @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
+      </div>
+      <div :class="classCf1">
+        <cf1-reloj
+          @cafe1-stop="stopCafe1"
+          @cafe1-start="startCafe1"
+          @cf1-ended="flagCf1"
+        ></cf1-reloj>
+      </div>
+
+      <div :class="classAi">
+        <ai-reloj
+          @ai-start="startAi"
+          @ai-stop="stopAi"
+          @ai-ended="flagAi"
+        ></ai-reloj>
+      </div>
       <div :class="classCf2">
         <cf2-reloj
           @cafe2-stop="stopCafe2"
@@ -43,6 +44,14 @@
         ></cf2-reloj>
       </div>
     </div>
+    <v-footer class="footer" dark>
+      <marquee-text :repeat="4">
+        <div class="mx-4 font-italic">
+          <span class="boss mx-2 font-weight-bold">{{ groupLeader }}</span>
+          "{{ difusion }}".
+        </div>
+      </marquee-text>
+    </v-footer>
   </div>
 </template>
 
@@ -57,6 +66,9 @@ import RsReloj from "../components/RsReloj.vue";
 export default {
   name: "home",
   data: () => ({
+    username: "D.Umana",
+    groupLeader: "Luis Gonzalez",
+    difusion: "Lunes 2 de Diciembre: descuento del 2x1 en revista El Catolico",
     classUp: "col-md-4 d-flex align-center justify-center ",
     classCf1: "col-md-4 d-flex align-center justify-center",
     classCf2: "col-md-4 d-flex align-center justify-center",
@@ -172,6 +184,7 @@ export default {
 </script>
 
 <style lang="stylus">
+
 @font-face {
   font-family: 'digital-7';
   src: url('../assets/digital-7.ttf');
@@ -179,6 +192,12 @@ export default {
 
 .hidden {
   display: none;
+}
+
+.footer{
+  position:fixed !important
+  bottom:0px
+
 }
 
 .timer {

@@ -14,10 +14,10 @@
       </div>
 
       <v-spacer></v-spacer>
-      <v-toolbar-title>
+      <v-toolbar-title
+        >{{ username }}
         <span class="mdi mdi-account-circle"></span>
-        {{ username }}</v-toolbar-title
-      >
+      </v-toolbar-title>
       <v-menu left bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
@@ -42,14 +42,6 @@
     <v-content class=" align-center d-flex">
       <router-view></router-view>
     </v-content>
-    <v-footer dark>
-      <marquee-text :repeat="4">
-        <div class="mx-4 font-italic">
-          <span class="boss mx-2 font-weight-bold">{{ groupLeader }}</span>
-          "{{ difusion }}".
-        </div>
-      </marquee-text>
-    </v-footer>
   </v-app>
 </template>
 
@@ -59,10 +51,7 @@ export default {
   components: {},
 
   data: () => ({
-    username: "D.Umana",
-    groupLeader: "Luis Gonzalez",
-    difusion: "Lunes 2 de Diciembre: descuento del 2x1 en revista El Catolico"
-    //
+    username: "Daniel Umana"
   })
 };
 </script>
