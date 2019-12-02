@@ -61,7 +61,7 @@ export default {
   data: () => ({
     username: "D.Umana",
     groupLeader: "Luis Gonzalez",
-    difusion: "Hoy hay descuento del 2x1 en revista El Catolico"
+    difusion: "Lunes 2 de Diciembre: descuento del 2x1 en revista El Catolico"
     //
   })
 };
