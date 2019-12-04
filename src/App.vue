@@ -10,12 +10,12 @@
           transition="scale-transition"
           width="40"
         />
-        <v-toolbar-title class="titulo-pagina">Doctore </v-toolbar-title>
+        <v-toolbar-title class="titulo-pagina">Doctore</v-toolbar-title>
       </div>
 
       <v-spacer></v-spacer>
-      <v-toolbar-title
-        >{{ username }}
+      <v-toolbar-title class="hidden-sm-and-down">
+        {{ username }}
         <span class="mdi mdi-account-circle"></span>
       </v-toolbar-title>
       <v-menu left bottom>
@@ -39,7 +39,7 @@
       </v-menu>
     </v-app-bar>
 
-    <v-content class=" align-center d-flex">
+    <v-content class="align-center d-flex">
       <router-view></router-view>
     </v-content>
   </v-app>
@@ -57,20 +57,15 @@ export default {
 </script>
 
 <style lang="stylus">
-
-
 @import url('https://fonts.googleapis.com/css?family=Merienda+One&display=swap');
 
-
-.titulo-pagina{
-font-family: 'Merienda One', cursive;
-font-size 2rem !important
+.titulo-pagina {
+  font-size: 2rem !important;
 }
 
-.v-content{
-background: #232526;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+.v-content {
+  background: #232526; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>
