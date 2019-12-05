@@ -2,7 +2,12 @@
   <div class="orange-gradient justify-center d-flex my-4">
     <div class="chart-wrap">
       <div id="chart">
-        <apexchart type="donut" width="580" :options="chartOptions" :series="series" />
+        <apexchart
+          type="donut"
+          width="500"
+          :options="chartOptions"
+          :series="series"
+        />
       </div>
     </div>
   </div>
@@ -10,10 +15,15 @@
 
 <script>
 export default {
+  props: {
+    series: {
+      type: Array,
+      default: () => [5, 1, 1, 1, 1]
+    }
+  },
   data: () => ({
     //
 
-    series: [5, 1, 1, 1, 1],
     plotOptions: {
       pie: {
         expandOnClick: false
@@ -29,7 +39,7 @@ export default {
         floating: false,
         style: {
           fontSize: "16px",
-          color: "white"
+          color: "black"
         }
       },
       chart: {
@@ -73,6 +83,12 @@ export default {
             chart: {
               width: 320
             },
+            dataLabels: {
+              style: {
+                fontSize: "10px",
+                fontFamily: "Helvetica, Arial, sans-serif"
+              }
+            },
             tooltip: {
               fillSeriesColor: true
             },
@@ -83,7 +99,7 @@ export default {
               show: true,
               fontSize: "12px",
               labels: {
-                colors: "#ffffff",
+                colors: "black",
                 useSeriesColors: false
               }
             }
@@ -97,7 +113,7 @@ export default {
         show: true,
         fontSize: "18px",
         labels: {
-          colors: "#ffffff",
+          colors: "black",
           useSeriesColors: false
         }
       }
@@ -130,5 +146,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

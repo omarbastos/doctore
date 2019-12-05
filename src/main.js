@@ -10,7 +10,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import VueApexCharts from "vue-apexcharts";
 import moment from "moment";
-
+import VueCarousel from "vue-carousel";
+Vue.use(VueCarousel);
 Vue.filter("formatDate", function(value) {
   if (value) {
     return moment.unix(value).format("LT");
