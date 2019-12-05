@@ -51,7 +51,7 @@ export default {
       colors: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"],
       labels: [
         "Disponible",
-        "Urgencia Personal",
+        "Uso Personal",
         "Café",
         "Almuerzo",
         "Reunion Supervisor"

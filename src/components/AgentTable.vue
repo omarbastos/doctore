@@ -23,9 +23,16 @@
               "
             >{{ item.tardias }}</td>
             <td class="text-center">
-              <v-icon
-                :color="item.estatus == 'mdi-phone-check' ? 'green' : 'red'"
-              >{{ item.estatus }}</v-icon>
+              <v-tooltip right>
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on">
+                    <v-icon
+                      :color="item.estatus == 'disponible' ? 'green' : 'red'"
+                    >{{ item.estatus | estatusSwitch }}</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ item.estatus.toUpperCase()}}</span>
+              </v-tooltip>
             </td>
           </tr>
         </tbody>
@@ -33,7 +40,7 @@
     </v-simple-table>
 
     <div class="ma-4 d-flex justify-center">
-      <v-btn color="success" @click="exportExcelx">Export to Excel</v-btn>
+      <v-btn color="success" @click="exportExcel">Export to Excel</v-btn>
     </div>
   </div>
 </template>
@@ -45,86 +52,105 @@ export default {
       {
         agente: "Carlos",
         llegada: "1575462650",
-        estatus: "mdi-food",
+        estatus: "almuerzo",
         tardias: "1"
       },
       {
         agente: "Yuja",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "disponible",
         tardias: "1"
       },
       {
         agente: "Aleidri",
         llegada: "1575462650",
-        estatus: "mdi-toilet",
+        estatus: "up",
         tardias: "1"
       },
       {
         agente: "Anggy",
         llegada: "1575462650",
-        estatus: "mdi-food",
+        estatus: "almuerzo",
         tardias: "1"
       },
       {
         agente: "Desire",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "disponible",
         tardias: "0"
       },
       {
         agente: "Daniel",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "disponible",
         tardias: "2"
       },
       {
         agente: "Ligser",
         llegada: "1575446854",
-        estatus: " mdi-account-tie",
+        estatus: "rs",
         tardias: "4"
       },
       {
         agente: "Lignail",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "disponible",
         tardias: "1"
       },
       {
         agente: "Oscar",
         llegada: "1575462650",
-        estatus: "mdi-coffee",
+        estatus: "coffe",
         tardias: "0"
       },
       {
         agente: "Omar",
         llegada: "1575462650",
-        estatus: "mdi-food",
+        estatus: "almuerzo",
         tardias: "1"
       },
       {
         agente: "Javier",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "coffe",
         tardias: "0"
       },
       {
         agente: "Juan",
         llegada: "1575462650",
-        estatus: "mdi-phone-check",
+        estatus: "disponible",
         tardias: "0"
       }
     ]
   }),
-  filters: {},
+  filters: {
+    estatusSwitch(value) {
+      switch (value) {
+        case "disponible":
+          return "mdi-phone-check";
+
+        case "almuerzo":
+          return "mdi-food";
+
+        case "coffe":
+          return "mdi-coffee";
+
+        case "rs":
+          return "mdi-account-tie";
+
+        case "up":
+          return "mdi-toilet";
+
+        default:
+      }
+    }
+  },
+
   methods: {
     exportExcel: function() {
       let data = XLSX.utils.json_to_sheet(this.Agentes);
       const workbook = XLSX.utils.book_new();
-      workbook.Props = {
-        Title: "Tabla de Usuarios",
-        CreatedDate: new Date(2017, 12, 19)
-      };
+
       const filename = "devschile-admins";
       XLSX.utils.book_append_sheet(workbook, data, filename);
       XLSX.writeFile(workbook, `${filename}.xlsx`);

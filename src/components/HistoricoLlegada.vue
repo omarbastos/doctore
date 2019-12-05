@@ -1,149 +1,108 @@
 <template>
-  <div class="orange-gradient justify-center d-flex my-4">
-    <div class="chart-wrap">
-      <div id="chart">
-        <apexchart type="rangeBar" width="580" :options="chartOptions" :series="series" />
-      </div>
-    </div>
+  <div id="chart">
+    <apexchart type="line" height="350" :options="chartOptions" :series="series" />
   </div>
 </template>
 
 <script>
 export default {
   data: () => ({
-    //
-
     series: [
       {
-        data: [
-          {
-            x: "TEAM A",
-            y: [65, 96]
-          },
-          {
-            x: "TEAM B",
-            y: [55, 78]
-          },
-          {
-            x: "TEAM C",
-            y: [95, 186]
-          }
-        ]
+        name: "Tardias",
+        data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5]
       }
     ],
-    plotOptions: {
-      pie: {
-        expandOnClick: false
-      }
-    },
     chartOptions: {
+      chart: {
+        type: "line",
+        shadow: {
+          enabled: false,
+          color: "white",
+          top: 3,
+          left: 2,
+          blur: 3,
+          opacity: 1
+        }
+      },
+      stroke: {
+        width: 7,
+        curve: "smooth"
+      },
+
+      xaxis: {
+        type: "datetime",
+        labels: {
+          style: {
+            colors: "white",
+            fontSize: "12px",
+            fontFamily: "Helvetica, Arial, sans-serif",
+            cssClass: "apexcharts-xaxis-label"
+          }
+        },
+        categories: [
+          "1/11/2000",
+          "2/11/2000",
+          "3/11/2000",
+          "4/11/2000",
+          "5/11/2000",
+          "6/11/2000",
+          "7/11/2000",
+          "8/11/2000",
+          "9/11/2000",
+          "10/11/2000",
+          "11/11/2000",
+          "12/11/2000",
+          "1/11/2001",
+          "2/11/2001",
+          "3/11/2001",
+          "4/11/2001",
+          "5/11/2001",
+          "6/11/2001"
+        ]
+      },
       title: {
-        text: "Resumen de Disponibilidad",
+        text: "Historico Tardias",
         align: "left",
-        margin: 10,
-        offsetX: 0,
-        offsetY: 0,
-        floating: false,
         style: {
           fontSize: "16px",
           color: "white"
         }
       },
-      chart: {
-        toolbar: {
-          show: true,
-          tools: {
-            selection: true,
-            zoom: true,
-            zoomin: true,
-            zoomout: true,
-            download: true,
-            pan: true,
-            reset: true | '<img src="/static/icons/reset.png" width="20">',
-            customIcons: []
-          },
-          autoSelected: "zoom"
+      fill: {
+        type: "gradient",
+        gradient: {
+          shade: "dark",
+          type: "horizontal",
+          shadeIntensity: 0.5,
+          gradientToColors: ["#fd9917", "#e95f18"], // optional, if not defined - uses the shades of same color in series
+          inverseColors: true,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 50, 100],
+          colorStops: []
         }
       },
-      colors: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"],
-      labels: [
-        "Disponible",
-        "Urgencia Personal",
-        "Café",
-        "Almuerzo",
-        "Reunion Supervisor"
-      ],
+      markers: {
+        size: 4,
+        opacity: 0.9,
+        colors: ["#FFA41B"],
+        strokeColor: "#fff",
+        strokeWidth: 2,
 
-      dataLabels: {
-        enabled: true,
-        formatter: function(val) {
-          return val.toFixed(0) + "%";
+        hover: {
+          size: 7
         }
       },
-      theme: {
-        colorPalette: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"]
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 320
-            },
-            tooltip: {
-              fillSeriesColor: true
-            },
-            legend: {
-              position: "bottom",
-              offsetY: 0,
-              height: 100,
-              show: true,
-              fontSize: "12px",
-              labels: {
-                colors: "#ffffff",
-                useSeriesColors: false
-              }
-            }
-          }
-        }
-      ],
-      legend: {
-        position: "right",
-        offsetY: 0,
-        height: 230,
-        show: true,
-        fontSize: "18px",
-        labels: {
-          colors: "#ffffff",
-          useSeriesColors: false
+      yaxis: {
+        min: -10,
+        max: 40,
+        title: {
+          text: "Engagement"
         }
       }
     }
-  }),
-  methods: {
-    appendData: function() {
-      var arr = this.series.slice();
-      arr.push(Math.floor(Math.random() * (100 - 1 + 1)) + 1);
-      this.series = arr;
-    },
-
-    removeData: function() {
-      if (this.series.length === 1) return;
-      var arr = this.series.slice();
-      arr.pop();
-      this.series = arr;
-    },
-
-    randomize: function() {
-      this.series = this.series.map(() => {
-        return Math.floor(Math.random() * (100 - 1 + 1)) + 1;
-      });
-    },
-
-    reset: function() {
-      this.series = [44, 55, 13, 33];
-    }
-  }
+  })
 };
 </script>
 

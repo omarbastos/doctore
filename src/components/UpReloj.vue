@@ -17,7 +17,7 @@
         v-if="!timer"
         @click="startTimer"
       >
-        <v-icon>mdi-toilet</v-icon>URGENCIA PERSONAL
+        <v-icon>mdi-toilet</v-icon>USO PERSONAL
       </v-btn>
       <!--     Pause Timer -->
       <v-btn
@@ -29,7 +29,7 @@
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon>mdi-toilet</v-icon>PAUSAR URGENCIA PERSONAL
+        <v-icon>mdi-toilet</v-icon>PAUSAR USO PERSONAL
       </v-btn>
     </div>
   </div>
