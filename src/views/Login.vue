@@ -16,12 +16,17 @@
               >Umana Consultants</v-toolbar-title
             >
           </v-toolbar>
+          <v-card v-if="errors && errors.length">
+            <v-card-text v-for="(err, index) of errors" :key="index">
+              {{err}}
+            </v-card-text>
+          </v-card>
           <v-card-text>
             <v-form>
               <v-text-field
                 label="Usuario"
                 name="username"
-                v-model="username"
+                v-model="login.username"
                 prepend-icon="mdi-account"
                 type="text"
               />
@@ -30,7 +35,7 @@
                 id="password"
                 label="Contraseña"
                 name="password"
-                v-model="password"
+                v-model="login.password"
                 prepend-icon="mdi-lock"
                 type="password"
               />
@@ -38,7 +43,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="#FD9917">Iniciar Sesión</v-btn>
+            <v-btn @click="onSubmit" color="#FD9917">Iniciar Sesión</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -47,14 +52,38 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: {
     source: String
   },
   data: () => ({
-    username: "",
-    password: ""
-  })
+    login: {},
+    errors: []
+  }),
+  methods: {
+    onSubmit (ev) {
+      ev.preventDefault()
+      console.log(this.login)
+      axios.post('http://localhost:3000/api/auth/login', this.login)
+        .then(res => {
+          localStorage.setItem('jwtToken', res.data.token)
+          this.$router.push({
+            name: 'agente'
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          this.errors.push(err)
+        })
+    },
+    register () {
+      this.$router.push({
+        name: 'register'
+      })
+    }
+  }
 };
 </script>
 
