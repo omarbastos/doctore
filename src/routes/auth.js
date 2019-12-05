@@ -8,18 +8,23 @@ const settings = require('../config/settings')
 require('../config/passport')(passport)
 const User = require('../models/user')
 
+const helpers = require('../config/helpers')
+
 // Para crear usuario
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   console.log(req.body)
   if (!req.body.username || !req.body.password) {
     res.json({success: false, msg: 'Por favor escribir usuario y contraseña'})
   } else {
     try {
       const body = req.body
-      console.log(body)
+      body.password = await helpers.encryptPassword(body.password)
+
       const newUser = await User.create(body)
       console.log(newUser)
       res.status(200).json(newUser)
+
+      return next()
 
     } catch (error) {
 
