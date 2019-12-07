@@ -11,6 +11,8 @@ import "aos/dist/aos.css";
 import VueApexCharts from "vue-apexcharts";
 import moment from "moment";
 import VueCarousel from "vue-carousel";
+import Vuex from "vuex";
+Vue.use(Vuex);
 Vue.use(VueCarousel);
 Vue.filter("formatDate", function(value) {
   if (value) {

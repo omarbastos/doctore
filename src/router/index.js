@@ -13,7 +13,10 @@ const routes = [
   {
     path: "/agente",
     name: "Agente",
-    component: Agente
+    component: Agente,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/login",
@@ -28,16 +31,22 @@ const routes = [
   {
     path: "/supervisor",
     name: "Supervisor",
-    component: Supervisor
+    component: Supervisor,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/master",
     name: "Master",
-    component: Master
+    component: Master,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/secure",
-    name: "secure",
+    name: "Secure",
     component: Secure,
     meta: {
       requiresAuth: true
@@ -51,7 +60,7 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, next) => {
+router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (store.getters.isLoggedIn) {
       next();
