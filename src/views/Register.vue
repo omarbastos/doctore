@@ -21,7 +21,7 @@
               <v-text-field
                 label="Usuario"
                 name="username"
-                v-model="username"
+                v-model="register.username"
                 prepend-icon="mdi-account"
                 type="text"
               />
@@ -30,20 +30,20 @@
                 id="password"
                 label="Contraseña"
                 name="password"
-                v-model="password"
+                v-model="register.password"
                 prepend-icon="mdi-lock"
                 type="password"
               />
               <v-text-field
-                id="password"
+                id="rePassword"
                 label="Confirmar Contraseña"
-                name="password"
+                name="rePassword"
                 v-model="rePassword"
                 prepend-icon="mdi-shield-lock"
                 type="password"
               />
               <v-select
-                v-model="select"
+                v-model="register.level"
                 hint="Tipo de usuario"
                 :items="items"
                 item-text="state"
@@ -52,13 +52,13 @@
                 return-object
                 single-line
                 persistent-hint=""
-                :prepend-icon="select.abbr"
+                :prepend-icon="register.level.abbr"
               ></v-select>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="#FD9917">Registrar</v-btn>
+            <v-btn @click="onSubmit" color="#FD9917">Registrar</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -67,21 +67,39 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: {
     source: String
   },
   data: () => ({
-    username: "",
-    password: "",
+    register: {
+      level: { state: "Agente", abbr: "mdi-account-circle" }
+    },
     rePassword: "",
-    select: { state: "Agente", abbr: "mdi-account-circle" },
     items: [
       { state: "Supervisor", abbr: "mdi-account-supervisor-circle" },
       { state: "Master", abbr: "mdi-account-tie" },
       { state: "Agente", abbr: "mdi-account-circle" }
     ]
-  })
+  }),
+  methods: {
+    onSubmit (ev) {
+      ev.preventDefault()
+      this.register.level = this.register.level.state
+      axios.post('http://localhost:3000/api/auth/register/', this.register)
+      .then(() => {
+        alert("registro exitoso")
+        this.$router.push({
+          name: 'login'
+        })
+      })
+      .catch(err => {
+        this.errors.push(err)
+      })
+    }
+  }
 };
 </script>
 
