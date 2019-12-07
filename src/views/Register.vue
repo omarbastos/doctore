@@ -88,7 +88,6 @@ export default {
     onSubmit (ev) {
       ev.preventDefault()
       this.register.level = this.register.level.state
-      console.log(this.register)
       axios.post('http://localhost:3000/api/auth/register/', this.register)
       .then(() => {
         alert("registro exitoso")

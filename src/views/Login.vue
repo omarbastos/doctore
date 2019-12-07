@@ -65,12 +65,10 @@ export default {
   methods: {
     onSubmit (ev) {
       ev.preventDefault()
-      console.log(this.login)
       axios.post('http://localhost:3000/api/auth/login', this.login)
         .then(res => {
-          localStorage.setItem('jwtToken', res.data.token)
           this.$router.push({
-            name: 'agente'
+            name: res.data.level
           })
         })
         .catch(err => {
