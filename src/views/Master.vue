@@ -1,39 +1,50 @@
 <template>
-  <carousel
-    data-aos="zoom-in-up"
-    class="my-4"
-    :paginationSize="7"
-    paginationColor="black"
-    paginationActiveColor="#fb693a"
-    :perPage="1"
-    :autoplay="true"
-    :autoplayTimeout="10000"
-    :autoplayHoverPause="true"
-    :perPageCustom="[
+  <div>
+    <historico-llegada
+      data-aos="zoom-in"
+      @close-historico="hideHistorico"
+      :agent="temporalAgent"
+      v-if="showHistorico"
+    ></historico-llegada>
+    <carousel
+      v-if="!showHistorico"
+      data-aos="zoom-in-up"
+      class="my-4"
+      :paginationSize="7"
+      paginationColor="black"
+      paginationActiveColor="#fb693a"
+      :perPage="1"
+      :autoplay="true"
+      :autoplayTimeout="10000"
+      :autoplayHoverPause="true"
+      :perPageCustom="[
       [0, 1],
-      [480, 2],
-      [1000, 2]
+      [480, 1],
+      [1000, 1]
     ]"
-  >
-    <slide class="shadowcito" v-for="(item, index) in grupos" :key="index">
-      <div>
-        <h1 class="text-center display-2 my-4">{{ item.datos.grupoName }}</h1>
-        <resumen-disponibilidad
-          :series="item.datos.series"
-        ></resumen-disponibilidad>
-        <agent-table :datos="item.datos"></agent-table>
-      </div>
-    </slide>
-  </carousel>
+    >
+      <slide class="shadowcito" v-for="(item, index) in grupos" :key="index">
+        <div>
+          <h1 class="text-center display-2 my-4">{{ item.datos.grupoName }}</h1>
+
+          <resumen-disponibilidad :series="item.datos.series" v-if="!showHistorico"></resumen-disponibilidad>
+
+          <agent-table :datos="item.datos" @agent-selected="agentSelected" v-if="!showHistorico"></agent-table>
+        </div>
+      </slide>
+    </carousel>
+  </div>
 </template>
 
 <script>
 import AgentTable from "../components/AgentTable.vue";
+import HistoricoLlegada from "../components/HistoricoLlegada.vue";
 import ResumenDisponibilidad from "../components/ResumenDisponibilidad.vue";
 export default {
   components: {
     AgentTable,
-    ResumenDisponibilidad
+    ResumenDisponibilidad,
+    HistoricoLlegada
   },
   data: () => ({
     grupos: [
@@ -287,15 +298,26 @@ export default {
           ]
         }
       }
-    ]
-  })
+    ],
+
+    showHistorico: false,
+    temporalAgent: null
+  }),
+  methods: {
+    agentSelected(payload) {
+      this.temporalAgent = payload;
+      this.showHistorico = true;
+    },
+    hideHistorico() {
+      this.showHistorico = false;
+    }
+  }
 };
 </script>
 
 <style>
 .shadowcito {
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 5px 12px rgba(0, 0, 0, 0.22);
-  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.22);
 }
 @media only screen and (max-width: 600px) {
   .shadowcito {

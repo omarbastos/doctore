@@ -2,12 +2,7 @@
   <div class="orange-gradient justify-center d-flex my-4">
     <div class="chart-wrap">
       <div id="chart">
-        <apexchart
-          type="donut"
-          width="500"
-          :options="chartOptions"
-          :series="series"
-        />
+        <apexchart type="donut" width="500" :options="chartOptions" :series="series" />
       </div>
     </div>
   </div>
@@ -30,6 +25,19 @@ export default {
       }
     },
     chartOptions: {
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300
+            },
+            legend: {
+              show: false
+            }
+          }
+        }
+      ],
       title: {
         text: "Resumen de Disponibilidad",
         align: "left",
@@ -76,36 +84,7 @@ export default {
       theme: {
         colorPalette: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"]
       },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 320
-            },
-            dataLabels: {
-              style: {
-                fontSize: "10px",
-                fontFamily: "Helvetica, Arial, sans-serif"
-              }
-            },
-            tooltip: {
-              fillSeriesColor: true
-            },
-            legend: {
-              position: "bottom",
-              offsetY: 0,
-              height: 100,
-              show: true,
-              fontSize: "12px",
-              labels: {
-                colors: "black",
-                useSeriesColors: false
-              }
-            }
-          }
-        }
-      ],
+
       legend: {
         position: "right",
         offsetY: 0,

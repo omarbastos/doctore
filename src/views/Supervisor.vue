@@ -1,21 +1,13 @@
 <template>
   <div>
-    <resumen-disponibilidad
-      :series="series"
-      data-aos="zoom-in"
-      v-if="!showHistorico"
-    ></resumen-disponibilidad>
+    <resumen-disponibilidad :series="series" data-aos="zoom-in" v-if="!showHistorico"></resumen-disponibilidad>
     <historico-llegada
       data-aos="zoom-in"
       @close-historico="hideHistorico"
       :agent="temporalAgent"
       v-if="showHistorico"
     ></historico-llegada>
-    <agent-table
-      data-aos="zoom-in"
-      @agent-selected="agentSelected()"
-      v-else
-    ></agent-table>
+    <agent-table data-aos="zoom-in" @agent-selected="agentSelected" v-else></agent-table>
   </div>
 </template>
 
@@ -35,8 +27,8 @@ export default {
     temporalAgent: null
   }),
   methods: {
-    agentSelected(item) {
-      this.temporalAgent = item;
+    agentSelected(payload) {
+      this.temporalAgent = payload;
       this.showHistorico = true;
     },
     hideHistorico() {

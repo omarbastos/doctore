@@ -1,39 +1,27 @@
 <template>
-  <div>
+  <div class="responsive-card">
     <v-simple-table class="table-width" elevation="24" dense height="300px">
       <template v-slot:default>
         <thead class="naranja">
           <tr>
             <th class="white--text text-center font-weight-bold">AGENTE</th>
-            <th class="white--text text-center font-weight-bold">
-              HORA DE LLEGADA
-            </th>
+            <th class="white--text text-center font-weight-bold">HORA DE LLEGADA</th>
 
             <th class="white--text text-center font-weight-bold">TARDIAS</th>
             <th class="white--text text-center font-weight-bold">ESTATUS</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            @click="selectAgent(item)"
-            v-for="item in datos.Agentes"
-            :key="item.agente"
-          >
-            <td class="text-center font-weight-bold font-italic">
-              {{ item.agente }}
-            </td>
-            <td class="text-center font-weight-bold">
-              {{ item.llegada | formatDate }}
-            </td>
+          <tr @click="selectAgent(item)" v-for="item in datos.Agentes" :key="item.agente">
+            <td class="text-center font-weight-bold font-italic">{{ item.agente }}</td>
+            <td class="text-center font-weight-bold">{{ item.llegada | formatDate }}</td>
             <td
               :class="
                 item.tardias > 0
                   ? 'text-center   tardia-red'
                   : 'text-center  tardia '
               "
-            >
-              {{ item.tardias }}
-            </td>
+            >{{ item.tardias }}</td>
             <td class="text-center">
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
@@ -42,8 +30,7 @@
                       :color="
                         item.estatus == 'disponible' ? '#12560d' : '#ff0000'
                       "
-                      >{{ item.estatus | estatusSwitch }}</v-icon
-                    >
+                    >{{ item.estatus | estatusSwitch }}</v-icon>
                   </v-btn>
                 </template>
                 <span>{{ item.estatus.toUpperCase() }}</span>
@@ -56,13 +43,12 @@
 
     <div class="ma-4 d-flex justify-center">
       <v-btn
-        x-large=""
+        x-large
         color="#fd9917"
         elevation="24"
         class="white--text font-weight-bold"
         @click="exportExcel"
-        >Export to Excel</v-btn
-      >
+      >Export to Excel</v-btn>
     </div>
   </div>
 </template>
@@ -178,7 +164,7 @@ export default {
 
   methods: {
     exportExcel: function() {
-      let data = XLSX.utils.json_to_sheet(this.Agentes);
+      let data = XLSX.utils.json_to_sheet(this.datos.Agentes);
       const workbook = XLSX.utils.book_new();
 
       const filename = "devschile-admins";
@@ -194,9 +180,6 @@ export default {
 
 <style>
 @media only screen and (max-width: 600px) {
-  .table-width {
-    max-width: 320px;
-  }
   .tardia {
     font-size: 1rem !important;
     color: #12560d;
@@ -208,7 +191,9 @@ export default {
     font-weight: 900;
   }
 }
-
+.responsive-card {
+  width: 100%;
+}
 .naranja {
   background-color: #fd9917;
 }
