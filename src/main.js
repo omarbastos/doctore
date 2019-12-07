@@ -23,10 +23,14 @@ Vue.use(VueApexCharts);
 Vue.component("apexchart", VueApexCharts);
 Vue.component("marquee-text", MarqueeText);
 Vue.config.productionTip = false;
-import axios from 'axios'
-import VueAxios from 'vue-axios'
- 
-Vue.use(VueAxios, axios)
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.prototype.$http = axios;
+const token = localStorage.getItem("token");
+if (token) {
+  Vue.prototype.$http.defaults.headers.common["Authorization"] = token;
+}
+Vue.use(VueAxios, axios);
 
 new Vue({
   router,

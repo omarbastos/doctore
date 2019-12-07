@@ -18,7 +18,7 @@
           </v-toolbar>
           <v-card v-if="errors && errors.length">
             <v-card-text v-for="(err, index) of errors" :key="index">
-              {{err}}
+              {{ err }}
             </v-card-text>
           </v-card>
           <v-card-text>
@@ -52,8 +52,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   props: {
     source: String
@@ -63,23 +61,17 @@ export default {
     errors: []
   }),
   methods: {
-    onSubmit (ev) {
-      ev.preventDefault()
-      axios.post('http://localhost:3000/api/auth/login', this.login)
-        .then(res => {
-          this.$router.push({
-            name: res.data.level
-          })
-        })
-        .catch(err => {
-          console.log(err)
-          this.errors.push(err)
-        })
+    onSubmit(ev) {
+      ev.preventDefault();
+      this.$store
+        .dispatch("login", this.login)
+        .then(() => this.$router.push("/"))
+        .catch(err => console.log(err));
     },
-    register () {
+    register() {
       this.$router.push({
-        name: 'register'
-      })
+        name: "register"
+      });
     }
   }
 };
