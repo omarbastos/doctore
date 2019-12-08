@@ -1,8 +1,13 @@
 <template>
   <div>
-    <resumen-disponibilidad></resumen-disponibilidad>
-    <historico-llegada></historico-llegada>
-    <agent-table></agent-table>
+    <resumen-disponibilidad :series="series" data-aos="zoom-in" v-if="!showHistorico"></resumen-disponibilidad>
+    <historico-llegada
+      data-aos="zoom-in"
+      @close-historico="hideHistorico"
+      :agent="temporalAgent"
+      v-if="showHistorico"
+    ></historico-llegada>
+    <agent-table data-aos="zoom-in" @agent-selected="agentSelected" v-else></agent-table>
   </div>
 </template>
 
@@ -15,8 +20,20 @@ export default {
     AgentTable,
     ResumenDisponibilidad,
     HistoricoLlegada
+  },
+  data: () => ({
+    series: [7, 1, 0, 0, 1],
+    showHistorico: false,
+    temporalAgent: null
+  }),
+  methods: {
+    agentSelected(payload) {
+      this.temporalAgent = payload;
+      this.showHistorico = true;
+    },
+    hideHistorico() {
+      this.showHistorico = false;
+    }
   }
 };
 </script>
-
-<style></style>

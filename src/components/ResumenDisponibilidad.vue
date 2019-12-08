@@ -2,7 +2,7 @@
   <div class="orange-gradient justify-center d-flex my-4">
     <div class="chart-wrap">
       <div id="chart">
-        <apexchart type="donut" width="580" :options="chartOptions" :series="series" />
+        <apexchart type="donut" width="500" :options="chartOptions" :series="series" />
       </div>
     </div>
   </div>
@@ -10,16 +10,34 @@
 
 <script>
 export default {
+  props: {
+    series: {
+      type: Array,
+      default: () => [5, 1, 1, 1, 1]
+    }
+  },
   data: () => ({
     //
 
-    series: [5, 1, 1, 1, 1],
     plotOptions: {
       pie: {
         expandOnClick: false
       }
     },
     chartOptions: {
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 300
+            },
+            legend: {
+              show: false
+            }
+          }
+        }
+      ],
       title: {
         text: "Resumen de Disponibilidad",
         align: "left",
@@ -29,7 +47,7 @@ export default {
         floating: false,
         style: {
           fontSize: "16px",
-          color: "white"
+          color: "black"
         }
       },
       chart: {
@@ -66,30 +84,7 @@ export default {
       theme: {
         colorPalette: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"]
       },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 320
-            },
-            tooltip: {
-              fillSeriesColor: true
-            },
-            legend: {
-              position: "bottom",
-              offsetY: 0,
-              height: 100,
-              show: true,
-              fontSize: "12px",
-              labels: {
-                colors: "#ffffff",
-                useSeriesColors: false
-              }
-            }
-          }
-        }
-      ],
+
       legend: {
         position: "right",
         offsetY: 0,
@@ -97,7 +92,7 @@ export default {
         show: true,
         fontSize: "18px",
         labels: {
-          colors: "#ffffff",
+          colors: "black",
           useSeriesColors: false
         }
       }
@@ -130,5 +125,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

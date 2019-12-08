@@ -199,14 +199,16 @@ export default {
   bottom:0px
 
 }
-
+.theme--dark.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    background-color: #949698 !important;
+}
 .timer {
   font-size: 3.5rem;
   line-height: 1;
   margin-bottom: 40px;
   padding: 15px;
   font-family: 'digital-7', sans-serif;
-  color: white;
+  color: black;
 }
 
 .responsive-tabla {
