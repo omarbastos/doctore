@@ -28,7 +28,12 @@ passport.use('local.signup', new localStrategy({
   passwordField: 'password',
   passReqToCallback: true
 }, async (req, username, password, done) => {
-  console.log('Comienza la promesa...')
+  /*
+  const user = await User.findOne({ username: req.body.username }, async (err, user) => {
+    if (user) { return done(null, false, { message: 'El usuario ya existe.' }) }
+  })
+  */
+
   const newUser = {
     username: req.body.username,
     password: req.body.password,
