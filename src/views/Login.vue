@@ -65,7 +65,11 @@ export default {
       ev.preventDefault();
       this.$store
         .dispatch("login", this.login)
-        .then(() => this.$router.push("/"))
+        .then(res =>
+          this.$router.push({
+            name: res.data.user.level
+          })
+        )
         .catch(err => console.log(err));
     },
     register() {

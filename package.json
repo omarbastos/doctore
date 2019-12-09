@@ -19,6 +19,7 @@
     "colors": "^1.4.0",
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.4.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "file-saver": "^2.0.2",
     "jsonwebtoken": "^8.5.1",

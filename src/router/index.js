@@ -15,13 +15,16 @@ const routes = [
     name: "Agente",
     component: Agente,
     meta: {
-      requiresAuth: false
+      requiresAuth: true
     }
   },
   {
     path: "/login",
     name: "login",
-    component: Login
+    component: Login,
+    meta: {
+      isLogged: true
+    }
   },
   {
     path: "/register",
@@ -33,7 +36,7 @@ const routes = [
     name: "Supervisor",
     component: Supervisor,
     meta: {
-      requiresAuth: false
+      requiresAuth: true
     }
   },
   {
@@ -41,7 +44,7 @@ const routes = [
     name: "Master",
     component: Master,
     meta: {
-      requiresAuth: false
+      requiresAuth: true
     }
   },
   {
@@ -49,7 +52,7 @@ const routes = [
     name: "Secure",
     component: Secure,
     meta: {
-      requiresAuth: false
+      requiresAuth: true
     }
   }
 ];
@@ -67,7 +70,15 @@ router.beforeEach((to, from, next) => {
       return;
     }
     next("/login");
-  } else {
+  }
+  if (to.matched.some(record => record.meta.isLogged)) {
+    if (store.getters.userLevel) {
+      var userLevel = store.getters.userLevel;
+      next({
+        name: userLevel
+      });
+      return;
+    }
     next();
   }
 });
