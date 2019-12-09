@@ -12,9 +12,7 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text "
-              >Registrar un nuevo usuario</v-toolbar-title
-            >
+            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -51,8 +49,20 @@
                 label="Select"
                 return-object
                 single-line
-                persistent-hint=""
+                persistent-hint
                 :prepend-icon="register.level.abbr"
+              ></v-select>
+              <v-select
+                v-model="register.grupo"
+                hint="Grupo de trabajo"
+                :items="groups"
+                item-text="Grupo"
+                item-value="abbr"
+                label="Select"
+                return-object
+                single-line
+                persistent-hint
+                prepend-icon="mdi-account-group"
               ></v-select>
             </v-form>
           </v-card-text>
@@ -67,7 +77,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   props: {
@@ -82,22 +92,24 @@ export default {
       { state: "Supervisor", abbr: "mdi-account-supervisor-circle" },
       { state: "Master", abbr: "mdi-account-tie" },
       { state: "Agente", abbr: "mdi-account-circle" }
-    ]
+    ],
+    groups: ["La Nacion", "Cobros Tigo", "Claro"]
   }),
   methods: {
-    onSubmit (ev) {
-      ev.preventDefault()
-      this.register.level = this.register.level.state
-      axios.post('http://localhost:3000/api/auth/register/', this.register)
-      .then(() => {
-        alert("registro exitoso")
-        this.$router.push({
-          name: 'login'
+    onSubmit(ev) {
+      ev.preventDefault();
+      this.register.level = this.register.level.state;
+      axios
+        .post("http://localhost:3000/api/auth/register/", this.register)
+        .then(() => {
+          alert("registro exitoso");
+          this.$router.push({
+            name: "login"
+          });
         })
-      })
-      .catch(err => {
-        this.errors.push(err)
-      })
+        .catch(err => {
+          this.errors.push(err);
+        });
     }
   }
 };

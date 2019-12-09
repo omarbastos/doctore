@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-const bcrypt = require('bcryptjs')
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const bcrypt = require("bcryptjs");
 
 // Usuario con username, pass y level, level es estatus Master, Supervisor o Agente
 const UserSchema = new Schema({
@@ -16,10 +16,14 @@ const UserSchema = new Schema({
   level: {
     type: String,
     required: true
+  },
+  grupo: {
+    type: String,
+    required: true
   }
-})
+});
 
-// Encriptar contraseñas 
+// Encriptar contraseñas
 /*
 UserSchema.pre('save', (next) => {
   var user = this
@@ -46,12 +50,12 @@ UserSchema.pre('save', (next) => {
 UserSchema.methods.comparePassword = (pass, cb) => {
   bcrypt.compare(pass, this.password, (err, isMatch) => {
     if (err) {
-      return cb(err)
+      return cb(err);
     }
-    cb(null, isMatch)
-  })
-}
+    cb(null, isMatch);
+  });
+};
 
-const User = mongoose.model('User', UserSchema)
+const User = mongoose.model("User", UserSchema);
 
-module.exports = User
+module.exports = User;
