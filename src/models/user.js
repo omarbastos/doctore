@@ -15,7 +15,7 @@ const UserSchema = new Schema({
   level: {
     type: String,
     required: true
-  }/*,
+  },
   status: {
     type: Boolean,
     default: true
@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     type: Date, 
     default: Date.now
   },
+  fullname: String/*,
   bossID: { 
     type: String, 
   }*/

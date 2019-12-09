@@ -25,7 +25,13 @@
                 prepend-icon="mdi-account"
                 type="text"
               />
-
+              <v-text-field
+                label="Nombre completo"
+                name="fullname"
+                v-model="register.fullname"
+                prepend-icon="mdi-account"
+                type="text"
+              />
               <v-text-field
                 id="password"
                 label="Contraseña"
@@ -87,7 +93,16 @@ export default {
   methods: {
     onSubmit (ev) {
       ev.preventDefault()
+      if (this.registerter.username && this.register.password) {
+
+      } else {
+        this.errors.push('Ingrese los datos requeridos')
+      }
+      if (this.register.password == this.rePassword) 
+
       this.register.level = this.register.level.state
+      this.register.status = true
+      this.register.createdAt = new Date()
       axios.post('http://localhost:3000/api/auth/register/', this.register)
       .then(() => {
         alert("registro exitoso")
