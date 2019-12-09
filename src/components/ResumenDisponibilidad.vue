@@ -2,7 +2,12 @@
   <div class="orange-gradient justify-center d-flex my-4">
     <div class="chart-wrap">
       <div id="chart">
-        <apexchart type="donut" width="500" :options="chartOptions" :series="series" />
+        <apexchart
+          type="donut"
+          width="500"
+          :options="chartOptions"
+          :series="series"
+        />
       </div>
     </div>
   </div>

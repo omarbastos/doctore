@@ -15,7 +15,7 @@ const routes = [
     name: "Agente",
     component: Agente,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -33,7 +33,7 @@ const routes = [
     name: "Supervisor",
     component: Supervisor,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -41,7 +41,7 @@ const routes = [
     name: "Master",
     component: Master,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -49,7 +49,7 @@ const routes = [
     name: "Secure",
     component: Secure,
     meta: {
-      requiresAuth: true
+      requiresAuth: false
     }
   }
 ];
