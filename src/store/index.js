@@ -103,6 +103,9 @@ export default new Vuex.Store({
     authStatus: state => state.status,
     userLevel: state => state.user.level,
     userGrupo: state => state.user.grupo,
-    username: state => state.user.username
+    username: state => state.user.username,
+    isMaster: state => (state.user.level === "Master" ? true : false),
+    isSupervisor: state => (state.user.level === "Supervisor" ? true : false),
+    isAgente: state => (state.user.level === "Agente" ? true : false)
   }
 });
