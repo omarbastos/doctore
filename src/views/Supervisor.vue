@@ -1,13 +1,22 @@
 <template>
   <div>
-    <resumen-disponibilidad :series="series" data-aos="zoom-in" v-if="!showHistorico"></resumen-disponibilidad>
+    <h1 class="text-center display-2 my-4">{{ grupoTrabajo }}</h1>
+    <resumen-disponibilidad
+      :series="series"
+      data-aos="zoom-in"
+      v-if="!showHistorico"
+    ></resumen-disponibilidad>
     <historico-llegada
       data-aos="zoom-in"
       @close-historico="hideHistorico"
       :agent="temporalAgent"
       v-if="showHistorico"
     ></historico-llegada>
-    <agent-table data-aos="zoom-in" @agent-selected="agentSelected" v-else></agent-table>
+    <agent-table
+      data-aos="zoom-in"
+      @agent-selected="agentSelected"
+      v-else
+    ></agent-table>
   </div>
 </template>
 
@@ -26,6 +35,11 @@ export default {
     showHistorico: false,
     temporalAgent: null
   }),
+  computed: {
+    grupoTrabajo() {
+      return this.$store.getters.userGrupo;
+    }
+  },
   methods: {
     agentSelected(payload) {
       this.temporalAgent = payload;

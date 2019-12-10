@@ -6,6 +6,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Supervisor from "../views/Supervisor.vue";
 import store from "../store";
+import PageNotFound from "../views/404.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -67,7 +68,8 @@ const routes = [
         return;
       } else next({ name: "login" });
     }
-  }
+  },
+  { path: "*", component: PageNotFound }
 ];
 
 const router = new VueRouter({
