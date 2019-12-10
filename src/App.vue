@@ -26,7 +26,12 @@
         </template>
 
         <v-list dark>
-          <v-list-item @click="$store.dispatch('logout');$router.push('/login')">
+          <v-list-item
+            @click="
+              $store.dispatch('logout');
+              $router.push('/login');
+            "
+          >
             <v-list-item-title>
               Logout
               <span class="mdi mdi-logout"></span>
@@ -47,9 +52,7 @@ export default {
   name: "App",
   components: {},
 
-  data: () => ({
-    username: this.$store.getters.username
-  }),
+  data: () => ({}),
   computed: {
     username() {
       return this.$store.getters.username;
