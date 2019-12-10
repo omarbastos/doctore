@@ -22,7 +22,7 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black-text">
+            <v-toolbar-title class="black--text">
               Registrar un nuevo usuario
             </v-toolbar-title>
           </v-toolbar>
@@ -38,6 +38,8 @@
 
               <v-text-field
                 v-model="register.password"
+                label="Contraseña"
+                name="password"
                 :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                 :rules="[rules.required, rules.min]"
                 :type="show1 ? 'text' : 'password'"

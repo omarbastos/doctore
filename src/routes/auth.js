@@ -29,9 +29,13 @@ router.post("/login", async (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return res.status(401).json({
-        err: info
-      });
+      if (info.message == 'Missing credentials') {
+        info.message = 'Ingrese Usuario y Contraseña.'
+      }
+      res.status(401).json({
+        err: info.message
+      })
+      return next(info.message)
     }
 
     var token = Verify.getToken(user);

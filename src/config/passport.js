@@ -18,7 +18,7 @@ passport.use(
         }
         if (!user) {
           return done(null, false, {
-            message: "Nombre de usuario incorrecto."
+            message: "Nombre de usuario no encontrado."
           });
         }
         const validPass = await helpers.matchPass(password, user.password);
@@ -54,11 +54,9 @@ passport.use(
       };
       // Cifrar la contraseña
       newUser.password = await helpers.encryptPassword(newUser.password);
-      
-      console.log(newUser);
+
       // Guardar al usuario en la base de datos
       const result = await User.create(newUser);
-      console.log(result);
 
       return done(null, newUser);
     }

@@ -62,6 +62,7 @@ export default {
   }),
   methods: {
     onSubmit(ev) {
+      if (this.login.username == '') { console.log('hola') }
       ev.preventDefault();
       this.$store
         .dispatch("login", this.login)
@@ -70,7 +71,9 @@ export default {
             name: res.data.user.level
           })
         )
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.errors = [err.response.data.err]
+        });
     },
     register() {
       this.$router.push({
