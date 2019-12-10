@@ -7,7 +7,11 @@ export default new Vuex.Store({
   state: {
     status: "",
     token: localStorage.getItem("token") || "",
-    user: {}
+    user: {
+      username: localStorage.getItem("username") || "",
+      level: localStorage.getItem("level") || "",
+      grupo: localStorage.getItem("grupo") || ""
+    }
   },
   mutations: {
     auth_request(state) {
@@ -16,9 +20,11 @@ export default new Vuex.Store({
     auth_success(state, { token, user }) {
       state.status = "success";
       state.token = token;
-      state.user = user;
+      state.user.username = user.username;
+      state.user.level = user.level;
+      state.user.grupo = user.grupo;
     },
-    auth_error(state) {
+    auth_eror(state) {
       state.status = "error";
     },
     logout(state) {
@@ -47,7 +53,9 @@ export default new Vuex.Store({
             const token = resp.data.token;
             const user = resp.data.user;
             localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("username", user.username);
+            localStorage.setItem("level", user.level);
+            localStorage.setItem("grupo", user.grupo);
             axios.defaults.headers.common["Authorization"] = token;
             commit("auth_success", { token, user });
             resolve(resp);
@@ -70,9 +78,12 @@ export default new Vuex.Store({
           .then(resp => {
             const token = resp.data.token;
             const user = resp.data.user;
+
             localStorage.setItem("token", token);
             //guardando en local storage
-            localStorage.setItem("user", user);
+            localStorage.setItem("username", user.username);
+            localStorage.setItem("level", user.level);
+            localStorage.setItem("grupo", user.grupo);
             axios.defaults.headers.common["Authorization"] = token;
             commit("auth_success", { token, user });
             resolve(resp);
