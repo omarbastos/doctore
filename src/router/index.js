@@ -21,7 +21,10 @@ const routes = [
   {
     path: "/login",
     name: "login",
-    component: Login
+    component: Login,
+    meta: {
+      isLogged: true
+    }
   },
   {
     path: "/register",
@@ -67,7 +70,15 @@ router.beforeEach((to, from, next) => {
       return;
     }
     next("/login");
-  } else {
+  }
+  if (to.matched.some(record => record.meta.isLogged)) {
+    if (store.getters.userLevel) {
+      var userLevel = store.getters.userLevel;
+      next({
+        name: userLevel
+      });
+      return;
+    }
     next();
   }
 });

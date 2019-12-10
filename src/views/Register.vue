@@ -1,5 +1,15 @@
 <template>
   <v-container class="fill-height" fluid>
+    <v-snackbar
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      v-model="snackbar.status"
+    >
+      {{ snackbar.text }}
+      <v-btn color="white" text @click="snackbar.status = false">
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
         <v-card class="elevation-24">
@@ -12,9 +22,9 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text "
-              >Registrar un nuevo usuario</v-toolbar-title
-            >
+            <v-toolbar-title class="black-text">
+              Registrar un nuevo usuario
+            </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -25,29 +35,26 @@
                 prepend-icon="mdi-account"
                 type="text"
               />
+
               <v-text-field
-                label="Nombre completo"
-                name="fullname"
-                v-model="register.fullname"
-                prepend-icon="mdi-account"
-                type="text"
-              />
-              <v-text-field
-                id="password"
-                label="Contraseña"
-                name="password"
                 v-model="register.password"
-                prepend-icon="mdi-lock"
-                type="password"
-              />
+                :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                :rules="[rules.required, rules.min]"
+                :type="show1 ? 'text' : 'password'"
+                hint="At least 6 characters"
+                counter
+                @click:append="show1 = !show1"
+              ></v-text-field>
               <v-text-field
-                id="rePassword"
-                label="Confirmar Contraseña"
-                name="rePassword"
+                :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                :rules="[rules.required, passwordConfirmationRule]"
+                :type="show2 ? 'text' : 'password'"
+                label="Confirmacion de contraseña"
+                hint="At least 6 characters"
+                ref="rePassword"
                 v-model="rePassword"
-                prepend-icon="mdi-shield-lock"
-                type="password"
-              />
+                @click:append="show2 = !show2"
+              ></v-text-field>
               <v-select
                 v-model="register.level"
                 hint="Tipo de usuario"
@@ -57,8 +64,20 @@
                 label="Select"
                 return-object
                 single-line
-                persistent-hint=""
+                persistent-hint
                 :prepend-icon="register.level.abbr"
+              ></v-select>
+              <v-select
+                v-model="register.grupo"
+                hint="Grupo de trabajo"
+                :items="groups"
+                item-text="Grupo"
+                item-value="abbr"
+                label="Select"
+                return-object
+                single-line
+                persistent-hint
+                prepend-icon="mdi-account-group"
               ></v-select>
             </v-form>
           </v-card-text>
@@ -73,46 +92,71 @@
 </template>
 
 <script>
-import axios from 'axios'
-
+import axios from "axios";
 export default {
   props: {
     source: String
   },
   data: () => ({
+    snackbar: {
+      timeout: 2000,
+      text: "",
+      status: false
+    },
+    show1: false,
+    show2: false,
     register: {
+      username: "",
+      password: "",
       level: { state: "Agente", abbr: "mdi-account-circle" }
+    },
+    rules: {
+      required: value => !!value || "Required.",
+      min: v => v.length >= 6 || "Min 6 characters"
     },
     rePassword: "",
     items: [
       { state: "Supervisor", abbr: "mdi-account-supervisor-circle" },
       { state: "Master", abbr: "mdi-account-tie" },
       { state: "Agente", abbr: "mdi-account-circle" }
-    ]
+    ],
+    groups: ["La Nacion", "Cobros Tigo", "Claro"]
   }),
+  computed: {
+    passwordConfirmationRule() {
+      return () =>
+        this.register.password === this.rePassword
+          ? false
+          : "Password must match";
+    }
+  },
   methods: {
-    onSubmit (ev) {
-      ev.preventDefault()
-      if (this.registerter.username && this.register.password) {
-
+    onSubmit(ev) {
+      ev.preventDefault();
+      this.register.level = this.register.level.state;
+      if (this.register.password === this.rePassword) {
+        axios
+          .post("http://localhost:3000/api/auth/register/", this.register)
+          .then(() => {
+            this.snackbar.color = "success";
+            this.snackbar.text = "Registro exitoso";
+            this.snackbar.status = true;
+            setTimeout(
+              () =>
+                this.$router.push({
+                  name: "login"
+                }),
+              2000
+            );
+          })
+          .catch(err => {
+            this.errors.push(err);
+          });
       } else {
-        this.errors.push('Ingrese los datos requeridos')
+        this.snackbar.color = "error";
+        this.snackbar.text = "La confirmación de la contraseña debe coincidir";
+        this.snackbar.status = true;
       }
-      if (this.register.password == this.rePassword) 
-
-      this.register.level = this.register.level.state
-      this.register.status = true
-      this.register.createdAt = new Date()
-      axios.post('http://localhost:3000/api/auth/register/', this.register)
-      .then(() => {
-        alert("registro exitoso")
-        this.$router.push({
-          name: 'login'
-        })
-      })
-      .catch(err => {
-        this.errors.push(err)
-      })
     }
   }
 };
