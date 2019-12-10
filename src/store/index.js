@@ -30,6 +30,9 @@ export default new Vuex.Store({
     logout(state) {
       state.status = "";
       state.token = "";
+      state.user.username = "";
+      state.user.level = "";
+      state.user.grupo = "";
     }
   },
   actions: {
@@ -37,6 +40,12 @@ export default new Vuex.Store({
       return new Promise(resolve => {
         commit("logout");
         localStorage.removeItem("token");
+
+        localStorage.removeItem("username");
+
+        localStorage.removeItem("level");
+
+        localStorage.removeItem("grupo");
         delete axios.defaults.headers.common["Authorization"];
         resolve();
       });
@@ -82,7 +91,7 @@ export default new Vuex.Store({
           })
           .catch(err => {
             commit("auth_error");
-            console.log(err)
+            console.log(err);
             localStorage.removeItem("token");
             reject(err);
           });
@@ -92,6 +101,8 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
-    userLevel: state => state.user.level
+    userLevel: state => state.user.level,
+    userGrupo: state => state.user.grupo,
+    username: state => state.user.username
   }
 });

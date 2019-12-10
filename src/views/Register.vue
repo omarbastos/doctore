@@ -1,14 +1,8 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-snackbar
-      :timeout="snackbar.timeout"
-      :color="snackbar.color"
-      v-model="snackbar.status"
-    >
+    <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
       {{ snackbar.text }}
-      <v-btn color="white" text @click="snackbar.status = false">
-        Close
-      </v-btn>
+      <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
@@ -22,9 +16,7 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text">
-              Registrar un nuevo usuario
-            </v-toolbar-title>
+            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -103,7 +95,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   props: {
     source: String
@@ -147,7 +138,7 @@ export default {
       ev.preventDefault();
       this.register.username = this.register.username.toLowerCase();
       this.register.level = this.register.level.state;
-      this.register.createdAt = new Date()
+      this.register.createdAt = new Date();
       if (this.register.password === this.rePassword) {
         this.$store
           .dispatch("register", this.register)
@@ -164,10 +155,13 @@ export default {
             );
           })
           .catch(err => {
-            this.errors = [err.response.data.err]
-            this.register.password = ''
-            this.rePassword = ''
-            this.register.level = { state:  "Agente", abbr: "mdi-account-circle" }
+            this.errors = [err.response.data.err];
+            this.register.password = "";
+            this.rePassword = "";
+            this.register.level = {
+              state: "Agente",
+              abbr: "mdi-account-circle"
+            };
           });
 
         /* // Registro seguro con Axios puro

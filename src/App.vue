@@ -16,7 +16,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-title class="hidden-sm-and-down">
         {{ username }}
-        <span class="mdi mdi-account-circle"></span>
+        <span :class="usernameIcon"></span>
       </v-toolbar-title>
       <v-menu left bottom>
         <template v-slot:activator="{ on }">
@@ -26,14 +26,11 @@
         </template>
 
         <v-list dark>
-          <v-list-item>
-            <v-list-item-title>Option 1</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title>Option 2</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title>Option 3</v-list-item-title>
+          <v-list-item @click="$store.dispatch('logout');$router.push('/login')">
+            <v-list-item-title>
+              Logout
+              <span class="mdi mdi-logout"></span>
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -51,8 +48,29 @@ export default {
   components: {},
 
   data: () => ({
-    username: "Daniel Umana"
+    username: this.$store.getters.username
   }),
+  computed: {
+    username() {
+      return this.$store.getters.username;
+    },
+    usernameIcon() {
+      switch (this.$store.getters.userLevel) {
+        case "Agente":
+          return "mdi mdi-account-circle";
+
+        case "Master":
+          return "mdi mdi-account-tie";
+
+        case "Supervisor":
+          return "mdi mdi-account-supervisor-circle";
+
+        default:
+          return null;
+      }
+    }
+  },
+
   created: function() {
     this.$http.interceptors.response.use(undefined, function(err) {
       return new Promise(function() {
@@ -74,9 +92,8 @@ export default {
 }
 
 .v-content {
-background: #ECE9E6;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+  background: #ECE9E6; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>
