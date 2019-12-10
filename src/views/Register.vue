@@ -57,6 +57,15 @@
                 v-model="rePassword"
                 @click:append="show2 = !show2"
               ></v-text-field>
+
+              <v-text-field
+                label="Nombre completo"
+                name="fullname"
+                v-model="register.fullname"
+                prepend-icon="mdi-account"
+                type="text"
+              />
+
               <v-select
                 v-model="register.level"
                 hint="Tipo de usuario"
@@ -110,6 +119,7 @@ export default {
     register: {
       username: "",
       password: "",
+      fullname: "",
       level: { state: "Agente", abbr: "mdi-account-circle" }
     },
     rules: {
@@ -135,8 +145,32 @@ export default {
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
+      this.register.username = this.register.username.toLowerCase();
       this.register.level = this.register.level.state;
+      this.register.createdAt = new Date()
       if (this.register.password === this.rePassword) {
+        this.$store
+          .dispatch("register", this.register)
+          .then(() => {
+            this.snackbar.color = "success";
+            this.snackbar.text = "Registro exitoso";
+            this.snackbar.status = true;
+            setTimeout(
+              () =>
+                this.$router.push({
+                  name: "login"
+                }),
+              2000
+            );
+          })
+          .catch(err => {
+            this.errors = [err.response.data.err]
+            this.register.password = ''
+            this.rePassword = ''
+            this.register.level = { state:  "Agente", abbr: "mdi-account-circle" }
+          });
+
+        /* // Registro seguro con Axios puro
         axios
           .post("http://localhost:3000/api/auth/register/", this.register)
           .then(() => {
@@ -152,8 +186,8 @@ export default {
             );
           })
           .catch(err => {
-            this.errors.push(err);
-          });
+            this.errors = [err.response.data.err]
+          });*/
       } else {
         this.snackbar.color = "error";
         this.snackbar.text = "La confirmación de la contraseña debe coincidir";

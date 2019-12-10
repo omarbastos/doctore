@@ -26,7 +26,7 @@
               <v-text-field
                 label="Usuario"
                 name="username"
-                v-model="login.username"
+                v-model="username"
                 prepend-icon="mdi-account"
                 type="text"
               />
@@ -57,13 +57,14 @@ export default {
     source: String
   },
   data: () => ({
+    username: '',
     login: {},
     errors: []
   }),
   methods: {
     onSubmit(ev) {
-      if (this.login.username == '') { console.log('hola') }
       ev.preventDefault();
+      this.login.username = this.username.toLowerCase();
       this.$store
         .dispatch("login", this.login)
         .then(res =>

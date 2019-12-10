@@ -50,7 +50,9 @@ passport.use(
         username: req.body.username,
         password: req.body.password,
         level: req.body.level,
-        grupo: req.body.grupo
+        grupo: req.body.grupo,
+        createdAt: req.body.createdAt,
+        fullname: req.body.fullname
       };
       // Cifrar la contraseña
       newUser.password = await helpers.encryptPassword(newUser.password);

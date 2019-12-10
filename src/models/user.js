@@ -22,12 +22,16 @@ const UserSchema = new Schema({
   },
   createdAt: {
     type: Date, 
-    default: Date.now
+    default: Date.now,
+    required: true
   },
-  fullname: String,
-  grupo: { 
+  fullname: {
     type: String,
     required: true
+  },
+  grupo: { 
+    type: String,
+    // required: true
   }
 })
 

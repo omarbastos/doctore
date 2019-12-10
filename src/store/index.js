@@ -45,19 +45,11 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit("auth_request");
         axios({
-          url: "http://localhost:3000/api/auth/login",
+          url: "http://localhost:3000/api/auth/register",
           data: user,
           method: "POST"
         })
           .then(resp => {
-            const token = resp.data.token;
-            const user = resp.data.user;
-            localStorage.setItem("token", token);
-            localStorage.setItem("username", user.username);
-            localStorage.setItem("level", user.level);
-            localStorage.setItem("grupo", user.grupo);
-            axios.defaults.headers.common["Authorization"] = token;
-            commit("auth_success", { token, user });
             resolve(resp);
           })
           .catch(err => {
