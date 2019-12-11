@@ -31,14 +31,14 @@ Vue.config.productionTip = false;
 
 import VueFirestore from "vue-firestore";
 Vue.use(VueFirestore);
-import { auth } from "./firebase";
-auth.onAuthStateChanged(user => {
-  if (user) {
-    store.dispatch("TRAER_USUARIO", user);
-  } else {
-    // No user is signed in.
-  }
-});
+// import { auth } from "./firebase";
+// auth.onAuthStateChanged(user => {
+//   if (user) {
+//     store.dispatch("TRAER_USUARIO", user);
+//   } else {
+//     // No user is signed in.
+//   }
+// });
 new Vue({
   router,
   store,
