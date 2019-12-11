@@ -25,10 +25,10 @@
             <v-form>
               <v-text-field
                 label="Usuario"
-                name="username"
-                v-model="username"
+                name="email"
+                v-model="login.email"
                 prepend-icon="mdi-account"
-                type="text"
+                type="email"
               />
 
               <v-text-field
@@ -52,34 +52,78 @@
 </template>
 
 <script>
+import { db, auth } from "../firebase";
+import moment from "moment";
 export default {
   props: {
     source: String
   },
   data: () => ({
-    username: '',
+    sessions: [],
     login: {},
     errors: []
   }),
+  firestore() {
+    return {};
+  },
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
-      this.login.username = this.username.toLowerCase();
-      this.$store
-        .dispatch("login", this.login)
-        .then(res =>
-          this.$router.push({
-            name: res.data.user.level
-          })
-        )
+      this.login.email = this.login.email.toLowerCase();
+
+      auth
+        .signInWithEmailAndPassword(this.login.email, this.login.password)
+        .then(data => {
+          console.log(data.user.uid);
+          this.$store.dispatch("TRAER_USUARIO", data.user.uid);
+          db.collection("sessions")
+            .add({
+              AI: {
+                flag: false,
+                startedAt: null,
+                flagAt: null,
+                finishedAt: null
+              },
+              UP: {
+                flag: false,
+                flagAt: null,
+                finishedAt: null
+              },
+              CF1: {
+                flag: false,
+                startedAt: null,
+                flagAt: null,
+                finishedAt: null
+              },
+              CF2: {
+                flag: false,
+                startedAt: null,
+                flagAt: null,
+                finishedAt: null
+              },
+              RS: {
+                totalTime: null
+              },
+              llegada: {
+                createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+                flag: false
+              },
+              status: "Disponible",
+              user: db.collection("users").doc(data.user.uid)
+            })
+            .then(docRef => {
+              console.log(docRef.id);
+              this.$store.dispatch("GUARDAR_SESION", docRef.id);
+              this.$router.push("/agente");
+            })
+            .catch(err => {
+              console.log(err);
+            });
+          this.$router.push("/agente");
+        })
         .catch(err => {
-          this.errors = [err.response.data.err]
+          console.log(err);
         });
-    },
-    register() {
-      this.$router.push({
-        name: "register"
-      });
     }
   }
 };

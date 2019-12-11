@@ -60,7 +60,7 @@ export default {
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.$emit("rs-stop");
+      this.$emit("rs-stop", this.totalTime);
     },
     stopTimer: function() {
       clearInterval(this.timer);

@@ -29,7 +29,7 @@
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon>mdi-toilet</v-icon>PAUSAR USO PERSONAL
+        <v-icon>mdi-paper-roll</v-icon>{{ upText }}
       </v-btn>
     </div>
   </div>
@@ -37,12 +37,18 @@
 
 <script>
 export default {
+  props: {
+    upText: {
+      type: String,
+      default: "PAUSAR USO PERSONAL"
+    }
+  },
   // ========================
   data: () => ({
     clock: false,
     disableUP: false,
     timer: null,
-    totalTime: 20 * 60,
+    totalTime: 10,
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
@@ -61,6 +67,7 @@ export default {
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
       this.$emit("up-pause");
+      this.disableUP = true;
     },
     stopTimer: function() {
       clearInterval(this.timer);
@@ -84,8 +91,8 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.disableUP = true;
         this.$emit("up-ended");
+
         return;
       }
     }

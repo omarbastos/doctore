@@ -29,7 +29,7 @@
         v-if="timer"
         @click="stopTimer"
       >
-        <v-icon>mdi-food-off</v-icon>DETENER ALMUERZO
+        <v-icon>mdi-food-off</v-icon>{{ aiText }}
       </v-btn>
     </div>
   </div>
@@ -37,12 +37,18 @@
 
 <script>
 export default {
+  props: {
+    aiText: {
+      type: String,
+      default: "DETENER ALMUERZO"
+    }
+  },
   // ========================
   data: () => ({
     clock: false,
     disableUP: false,
     timer: null,
-    totalTime: 60 * 60,
+    totalTime: 5,
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
@@ -86,7 +92,7 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.disableUP = true;
+
         this.$emit("ai-ended");
         return;
       }

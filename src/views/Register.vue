@@ -1,6 +1,10 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
+    <v-snackbar
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      v-model="snackbar.status"
+    >
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
@@ -16,14 +20,16 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
+            <v-toolbar-title class="black--text"
+              >Registrar un nuevo usuario</v-toolbar-title
+            >
           </v-toolbar>
           <v-card-text>
             <v-form>
               <v-text-field
                 label="Usuario"
-                name="username"
-                v-model="register.username"
+                name="email"
+                v-model="register.email"
                 prepend-icon="mdi-account"
                 type="text"
               />
@@ -95,6 +101,8 @@
 </template>
 
 <script>
+import { auth, usersCollection } from "../firebase.js";
+import moment from "moment";
 export default {
   props: {
     source: String
@@ -108,7 +116,7 @@ export default {
     show1: false,
     show2: false,
     register: {
-      username: "",
+      email: "",
       password: "",
       fullname: "",
       level: { state: "Agente", abbr: "mdi-account-circle" }
@@ -136,57 +144,32 @@ export default {
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
-      this.register.username = this.register.username.toLowerCase();
-      this.register.level = this.register.level.state;
-      this.register.createdAt = new Date();
-      if (this.register.password === this.rePassword) {
-        this.$store
-          .dispatch("register", this.register)
-          .then(() => {
-            this.snackbar.color = "success";
-            this.snackbar.text = "Registro exitoso";
-            this.snackbar.status = true;
-            setTimeout(
-              () =>
-                this.$router.push({
-                  name: "login"
-                }),
-              2000
-            );
-          })
-          .catch(err => {
-            this.errors = [err.response.data.err];
-            this.register.password = "";
-            this.rePassword = "";
-            this.register.level = {
-              state: "Agente",
-              abbr: "mdi-account-circle"
-            };
-          });
-
-        /* // Registro seguro con Axios puro
-        axios
-          .post("http://localhost:3000/api/auth/register/", this.register)
-          .then(() => {
-            this.snackbar.color = "success";
-            this.snackbar.text = "Registro exitoso";
-            this.snackbar.status = true;
-            setTimeout(
-              () =>
-                this.$router.push({
-                  name: "login"
-                }),
-              2000
-            );
-          })
-          .catch(err => {
-            this.errors = [err.response.data.err]
-          });*/
-      } else {
-        this.snackbar.color = "error";
-        this.snackbar.text = "La confirmación de la contraseña debe coincidir";
-        this.snackbar.status = true;
-      }
+      auth
+        .createUserWithEmailAndPassword(
+          this.register.email,
+          this.register.password
+        )
+        .then(user => {
+          // create user obj
+          usersCollection
+            .doc(user.user.uid)
+            .set({
+              email: this.register.email,
+              fullname: this.register.fullname,
+              level: this.register.level,
+              grupo: this.register.grupo,
+              createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+            })
+            .then(() => {
+              this.$router.push("/login");
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 };

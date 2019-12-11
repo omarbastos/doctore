@@ -1,28 +1,54 @@
 <template>
   <div class="agente my-4">
+    <v-snackbar
+      top
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      v-model="snackbar.status"
+    >
+      {{ snackbar.text }}
+      <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
+    </v-snackbar>
     <div class="row">
       <div :class="classUp">
         <up-reloj
+          :upText="upText"
           @up-pause="pauseUp"
           @up-start="startUp"
           @up-ended="flagUp"
         ></up-reloj>
       </div>
       <div :class="classHora">
-        <div class="display-1 white--text text-center">
+        <!-- <div class="display-1 white--text text-center">
           <span class="llegada">HORA DE LLEGADA</span>
           <div class="timer">
             <span id="minutes">{{ hours }}</span>
             <span id="middle">:</span>
             <span id="seconds">{{ minutes }}</span> AM
           </div>
+        </div> -->
+
+        <!-- <div>
+          <input type="text" v-model="newReptile" @keyup.enter="addReptile" />
+          <button @click="addReptile">
+            Add Reptile
+          </button>
         </div>
+        <ul class="reptileList">
+          <li :key="index" v-for="(reptile, index) in reptiles">
+            {{ reptile.name }} -
+            <button @click="deleteReptile(reptile)">
+              Remove
+            </button>
+          </li>
+        </ul> -->
       </div>
       <div :class="classRs">
         <rs-reloj @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
       </div>
       <div :class="classCf1">
         <cf1-reloj
+          :cf2Text="cf2Text"
           @cafe1-stop="stopCafe1"
           @cafe1-start="startCafe1"
           @cf1-ended="flagCf1"
@@ -31,6 +57,7 @@
 
       <div :class="classAi">
         <ai-reloj
+          :aiText="aiText"
           @ai-start="startAi"
           @ai-stop="stopAi"
           @ai-ended="flagAi"
@@ -38,6 +65,7 @@
       </div>
       <div :class="classCf2">
         <cf2-reloj
+          :cf2Text="cf2Text"
           @cafe2-stop="stopCafe2"
           @cafe2-start="startCafe2"
           @cf2-ended="flagCf2"
@@ -62,10 +90,25 @@ import AiReloj from "../components/AiReloj.vue";
 import Cf1Reloj from "../components/Cf1Reloj.vue";
 import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
-
+import moment from "moment";
+import { db, usersCollection, sessionsCollection } from "../firebase";
 export default {
   name: "home",
+
   data: () => ({
+    reptiles: [],
+    sessions: [],
+    session: [],
+    snackbar: {
+      timeout: 9999999,
+      text: "",
+      status: false
+    },
+    aiText: "Detener Almuerzo",
+    cf1Text: "Detener Coffe",
+    cf2Text: "Detener Coffe",
+    upText: "Detener Uso Personal",
+    newReptile: "",
     username: "D.Umana",
     groupLeader: "Luis Gonzalez",
     difusion: "Lunes 2 de Diciembre: descuento del 2x1 en revista El Catolico",
@@ -79,27 +122,78 @@ export default {
     minutes: "20",
     secSelected: 1200
   }),
+  firestore() {
+    return {
+      user: usersCollection.doc("QuNpemKyZVg5ojagunU5Bnbo7R63"),
+      reptiles: db.collection("reptiles"),
+      sessions: sessionsCollection
+    };
+  },
+  computed: {
+    docKey() {
+      return this.$store.getters.sesionId;
+    }
+  },
+  mounted() {},
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
   methods: {
+    addReptile: function() {
+      this.$firestore.reptiles.add({
+        name: this.newReptile,
+        timestamp: moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+      });
+      this.newReptile = "";
+    },
+    deleteReptile: function(reptile) {
+      this.$firestore.reptiles.doc(reptile[".key"]).delete();
+    },
     flagUp() {
-      //Guardar en la base de datos que se comio el UP
-      alert("Up finalizado");
+      this.$firestore.sessions.doc(this.docKey).update({
+        "UP.flag": true,
+        "UP.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+      });
     },
     flagAi() {
       //Guardar en la base de datos que se comio el UP
-      alert("Ai finalizado");
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "AI.flag": true,
+          "AI.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+        })
+        .then(() => {
+          this.aiText = "TARDIA POR ALMUERZO";
+        });
     },
 
     flagCf2() {
-      //Guardar en la base de datos que se comio el UP
-      alert("cf2 finalizado");
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "CF2.flag": true,
+          "CF2.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+        })
+        .then(() => {
+          this.cf2Text = "TARDIA POR CAFE2";
+        });
     },
 
     flagCf1() {
-      //Guardar en la base de datos que se comio el UP
-      alert("cf1 finalizado");
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "CF1.flag": true,
+          "CF1.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+        })
+        .then(() => {
+          this.cf1Text = "TARDIA POR CAFE1";
+        });
     },
     pauseUp() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "UP.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "Disponible"
+      });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -108,6 +202,9 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startUp() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        status: "Uso Personal"
+      });
       this.classUp = "col-md-12 d-flex align-center justify-center";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -116,6 +213,10 @@ export default {
       this.classHora = "hidden";
     },
     stopAi() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "AI.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "Disponible"
+      });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -124,6 +225,10 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startAi() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "AI.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "En Almuerzo"
+      });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -131,7 +236,11 @@ export default {
       this.classAi = "col-md-12 d-flex align-center justify-center";
       this.classHora = "hidden";
     },
-    stopRs() {
+    stopRs(totalTime) {
+      this.$firestore.sessions.doc(this.docKey).update({
+        status: "Disponible",
+        "RS.totalTime": totalTime
+      });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -140,6 +249,9 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startRs() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        status: "Reunión con Supervisor"
+      });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -148,6 +260,10 @@ export default {
       this.classHora = "hidden";
     },
     stopCafe1() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "CF1.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "Disponible"
+      });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -156,6 +272,10 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startCafe1() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "CF1.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "En Café"
+      });
       this.classUp = "hidden";
       this.classCf1 = "col-md-12 d-flex align-center justify-center";
       this.classCf2 = "hidden";
@@ -164,6 +284,10 @@ export default {
       this.classHora = "hidden";
     },
     stopCafe2() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "CF2.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "Disponible"
+      });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -172,6 +296,10 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startCafe2() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "CF2.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        status: "En Café"
+      });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "col-md-12 d-flex align-center justify-center";

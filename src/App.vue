@@ -15,8 +15,7 @@
 
       <v-spacer></v-spacer>
       <v-toolbar-title class="hidden-sm-and-down">
-        {{ username }}
-        <span :class="usernameIcon"></span>
+        <!-- <span :class="usernameIcon"></span> -->
       </v-toolbar-title>
       <v-menu left bottom>
         <template v-slot:activator="{ on }">
@@ -26,12 +25,7 @@
         </template>
 
         <v-list dark>
-          <v-list-item
-            @click="
-              $store.dispatch('logout');
-              $router.push('/login');
-            "
-          >
+          <v-list-item @click="logout()">
             <v-list-item-title>
               Logout
               <span class="mdi mdi-logout"></span>
@@ -48,41 +42,26 @@
 </template>
 
 <script>
+import { auth } from "./firebase";
+
 export default {
   name: "App",
   components: {},
 
   data: () => ({}),
-  computed: {
-    username() {
-      return this.$store.getters.username;
-    },
-    usernameIcon() {
-      switch (this.$store.getters.userLevel) {
-        case "Agente":
-          return "mdi mdi-account-circle";
-
-        case "Master":
-          return "mdi mdi-account-tie";
-
-        case "Supervisor":
-          return "mdi mdi-account-supervisor-circle";
-
-        default:
-          return null;
-      }
+  computed: {},
+  methods: {
+    logout() {
+      auth
+        .signOut()
+        .then(() => {
+          this.$store.commit("LOGOUT");
+          this.$router.push("/login");
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
-  },
-
-  created: function() {
-    this.$http.interceptors.response.use(undefined, function(err) {
-      return new Promise(function() {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch("logout");
-        }
-        throw err;
-      });
-    });
   }
 };
 </script>

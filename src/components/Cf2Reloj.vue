@@ -29,7 +29,7 @@
         v-if="timer"
         @click="stopTimer"
       >
-        <v-icon>mdi-coffee-off</v-icon>DETENER CAFE 2
+        <v-icon>mdi-coffee-off</v-icon>{{ cf2Text }}
       </v-btn>
     </div>
   </div>
@@ -37,12 +37,18 @@
 
 <script>
 export default {
+  props: {
+    cf2Text: {
+      type: String,
+      default: "DETENER CAFE2"
+    }
+  },
   // ========================
   data: () => ({
     clock: false,
     disableUP: false,
     timer: null,
-    totalTime: 10 * 60,
+    totalTime: 10,
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
@@ -86,7 +92,6 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.disableUP = true;
         this.$emit("cf2-ended");
         return;
       }
