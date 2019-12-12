@@ -40,13 +40,13 @@ const routes = [
   {
     path: "/register",
     name: "register",
-    component: Register,
-    beforeEnter: (to, from, next) => {
-      if (store.getters.isLoggedIn && store.getters.isMaster) {
-        next();
-        return;
-      } else next({ name: "login" });
-    }
+    component: Register
+    // beforeEnter: (to, from, next) => {
+    //   if (store.getters.isLoggedIn && store.getters.isMaster) {
+    //     next();
+    //     return;
+    //   } else next({ name: "login" });
+    // }
   },
   {
     path: "/supervisor",
@@ -83,6 +83,7 @@ router.beforeEach(async (to, from, next) => {
     next();
   } else {
     next({ name: "login" });
+    //      next({ name: "login" });
   }
 });
 export default router;

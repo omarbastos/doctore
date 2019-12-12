@@ -29,19 +29,27 @@
         v-if="timer"
         @click="stopTimer"
       >
-        <v-icon>mdi-food-off</v-icon>{{ aiText }}
+        <v-icon>mdi-food-off</v-icon>
+        {{ aiText }}
       </v-btn>
     </div>
   </div>
 </template>
 
 <script>
+import { sessionsCollection } from "../firebase";
 export default {
   props: {
     aiText: {
       type: String,
       default: "DETENER ALMUERZO"
     }
+  },
+  firestore() {
+    return {
+      sessions: sessionsCollection,
+      session: sessionsCollection.doc(this.$store.getters.sesionId)
+    };
   },
   // ========================
   data: () => ({

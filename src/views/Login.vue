@@ -15,7 +15,7 @@
             <v-toolbar-title class="black--text">Umana Consultants</v-toolbar-title>
           </v-toolbar>
           <v-card v-if="errors && errors.length">
-            <v-card-text v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
+            <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
           </v-card>
           <v-card-text>
             <v-form>
@@ -79,6 +79,10 @@ export default {
               if (response.level === "Agente") {
                 db.collection("sessions")
                   .add({
+                    user: this.uid,
+                    fullname: response.fullname,
+                    tardias: 0,
+                    grupo: response.grupo,
                     AI: {
                       flag: false,
                       startedAt: null,
@@ -113,8 +117,10 @@ export default {
                       ),
                       flag: false
                     },
-                    status: "Disponible",
-                    user: db.collection("users").doc(this.uid)
+                    status: {
+                      text: "Disponible",
+                      valor: 0
+                    }
                   })
                   .then(docRef => {
                     console.log(docRef.id);
@@ -134,7 +140,7 @@ export default {
           );
         })
         .catch(err => {
-          console.log(err);
+          this.errors = [err.message];
         });
     }
   }

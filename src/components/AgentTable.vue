@@ -12,9 +12,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr @click="selectAgent(item)" v-for="item in datos.Agentes" :key="item.agente">
-            <td class="text-center font-weight-bold font-italic">{{ item.agente }}</td>
-            <td class="text-center font-weight-bold">{{ item.llegada | formatDate }}</td>
+          <tr @click="selectAgent(item)" v-for="(item, index) in sessions" :key="index">
+            <td class="text-center font-weight-bold font-italic">{{ item.fullname }}</td>
+            <td class="text-center font-weight-bold">{{ item.llegada.createdAt | formatLlegada}}</td>
             <td
               :class="
                 item.tardias > 0
@@ -28,12 +28,12 @@
                   <v-btn icon v-on="on">
                     <v-icon
                       :color="
-                        item.estatus == 'disponible' ? '#12560d' : '#ff0000'
+                        item.status.text == 'Disponible' ? '#12560d' : '#ff0000'
                       "
-                    >{{ item.estatus | estatusSwitch }}</v-icon>
+                    >{{ item.status.valor | estatusSwitch }}</v-icon>
                   </v-btn>
                 </template>
-                <span>{{ item.estatus.toUpperCase() }}</span>
+                <span>{{ item.status.text.toUpperCase() }}</span>
               </v-tooltip>
             </td>
           </tr>
@@ -53,9 +53,12 @@
   </div>
 </template>
 <script>
+import moment from "moment";
 import XLSX from "xlsx";
 export default {
   props: {
+    sessions: {},
+
     datos: {
       type: Object,
       default: () => ({
@@ -138,23 +141,26 @@ export default {
       })
     }
   },
-
+  data: () => ({}),
   filters: {
+    formatLlegada(value) {
+      return moment(value).format("LT");
+    },
     estatusSwitch(value) {
       switch (value) {
-        case "disponible":
+        case 0:
           return "mdi-phone-check";
 
-        case "almuerzo":
+        case 4:
           return "mdi-food";
 
-        case "coffe":
+        case 1:
           return "mdi-coffee";
 
-        case "rs":
+        case 3:
           return "mdi-account-tie";
 
-        case "up":
+        case 2:
           return "mdi-toilet";
 
         default:

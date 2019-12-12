@@ -23,6 +23,7 @@ const onChange = (firebase.getCurrentUser = () => {
 });
 
 // firebase utils
+const increment = firebase.firestore.FieldValue.increment(1);
 const db = firebase.firestore();
 const auth = firebase.auth();
 const currentUser = auth.currentUser;
@@ -31,4 +32,12 @@ const currentUser = auth.currentUser;
 const usersCollection = db.collection("users");
 const sessionsCollection = db.collection("sessions");
 
-export { db, auth, currentUser, usersCollection, sessionsCollection, onChange };
+export {
+  db,
+  auth,
+  increment,
+  currentUser,
+  usersCollection,
+  sessionsCollection,
+  onChange
+};

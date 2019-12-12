@@ -18,6 +18,9 @@
             />
             <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
           </v-toolbar>
+          <v-card v-if="errors && errors.length">
+            <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
+          </v-card>
           <v-card-text>
             <v-form>
               <v-text-field
@@ -102,6 +105,7 @@ export default {
     source: String
   },
   data: () => ({
+    errors: [],
     snackbar: {
       timeout: 2000,
       text: "",
@@ -163,7 +167,7 @@ export default {
             });
         })
         .catch(err => {
-          console.log(err);
+          this.errors = [err.message];
         });
     }
   }
