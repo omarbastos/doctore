@@ -1,10 +1,6 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-snackbar
-      :timeout="snackbar.timeout"
-      :color="snackbar.color"
-      v-model="snackbar.status"
-    >
+    <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
@@ -20,9 +16,7 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text"
-              >Registrar un nuevo usuario</v-toolbar-title
-            >
+            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -154,9 +148,10 @@ export default {
           usersCollection
             .doc(user.user.uid)
             .set({
+              uid: user.user.uid,
               email: this.register.email,
               fullname: this.register.fullname,
-              level: this.register.level,
+              level: this.register.level.state,
               grupo: this.register.grupo,
               createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm Z")
             })

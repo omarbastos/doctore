@@ -12,14 +12,10 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text "
-              >Umana Consultants</v-toolbar-title
-            >
+            <v-toolbar-title class="black--text">Umana Consultants</v-toolbar-title>
           </v-toolbar>
           <v-card v-if="errors && errors.length">
-            <v-card-text v-for="(err, index) of errors" :key="index">
-              {{ err }}
-            </v-card-text>
+            <v-card-text v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
           </v-card>
           <v-card-text>
             <v-form>
@@ -61,7 +57,8 @@ export default {
   data: () => ({
     sessions: [],
     login: {},
-    errors: []
+    errors: [],
+    uid: null
   }),
   firestore() {
     return {};
@@ -74,52 +71,67 @@ export default {
       auth
         .signInWithEmailAndPassword(this.login.email, this.login.password)
         .then(data => {
-          console.log(data.user.uid);
-          this.$store.dispatch("TRAER_USUARIO", data.user.uid);
-          db.collection("sessions")
-            .add({
-              AI: {
-                flag: false,
-                startedAt: null,
-                flagAt: null,
-                finishedAt: null
-              },
-              UP: {
-                flag: false,
-                flagAt: null,
-                finishedAt: null
-              },
-              CF1: {
-                flag: false,
-                startedAt: null,
-                flagAt: null,
-                finishedAt: null
-              },
-              CF2: {
-                flag: false,
-                startedAt: null,
-                flagAt: null,
-                finishedAt: null
-              },
-              RS: {
-                totalTime: null
-              },
-              llegada: {
-                createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
-                flag: false
-              },
-              status: "Disponible",
-              user: db.collection("users").doc(data.user.uid)
-            })
-            .then(docRef => {
-              console.log(docRef.id);
-              this.$store.dispatch("GUARDAR_SESION", docRef.id);
-              this.$router.push("/agente");
-            })
-            .catch(err => {
-              console.log(err);
-            });
-          this.$router.push("/agente");
+          this.uid = data.user.uid;
+          console.log(`Antes del traer usuario este es el uid ${this.uid}`);
+
+          this.$store.dispatch("TRAER_USUARIO", data.user.uid).then(
+            response => {
+              if (response.level === "Agente") {
+                db.collection("sessions")
+                  .add({
+                    AI: {
+                      flag: false,
+                      startedAt: null,
+                      flagAt: null,
+                      finishedAt: null
+                    },
+                    UP: {
+                      flag: false,
+                      flagAt: null,
+                      finishedAt: null,
+                      totalTime: 10,
+                      disable: null
+                    },
+                    CF1: {
+                      flag: false,
+                      startedAt: null,
+                      flagAt: null,
+                      finishedAt: null
+                    },
+                    CF2: {
+                      flag: false,
+                      startedAt: null,
+                      flagAt: null,
+                      finishedAt: null
+                    },
+                    RS: {
+                      totalTime: null
+                    },
+                    llegada: {
+                      createdAt: moment(new Date()).format(
+                        "YYYY-MM-DD HH:mm Z"
+                      ),
+                      flag: false
+                    },
+                    status: "Disponible",
+                    user: db.collection("users").doc(this.uid)
+                  })
+                  .then(docRef => {
+                    console.log(docRef.id);
+                    this.$store.dispatch("GUARDAR_SESION", docRef.id);
+                    this.$router.push({ name: "Agente" });
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  });
+              } else {
+                this.$router.push({ name: response.level });
+              }
+            },
+            error => {
+              console.error(error);
+            }
+          );
         })
         .catch(err => {
           console.log(err);

@@ -10,7 +10,17 @@ const config = {
   storageBucket: "doctore-uc.appspot.com",
   messagingSenderId: "895555902961"
 };
+
 firebase.initializeApp(config);
+
+const onChange = (firebase.getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      unsubscribe();
+      resolve(user);
+    }, reject);
+  });
+});
 
 // firebase utils
 const db = firebase.firestore();
@@ -21,4 +31,4 @@ const currentUser = auth.currentUser;
 const usersCollection = db.collection("users");
 const sessionsCollection = db.collection("sessions");
 
-export { db, auth, currentUser, usersCollection, sessionsCollection };
+export { db, auth, currentUser, usersCollection, sessionsCollection, onChange };

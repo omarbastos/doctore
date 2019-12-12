@@ -1,17 +1,14 @@
 <template>
   <div class="agente my-4">
-    <v-snackbar
-      top
-      :timeout="snackbar.timeout"
-      :color="snackbar.color"
-      v-model="snackbar.status"
-    >
+    <v-snackbar top :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
     <div class="row">
       <div :class="classUp">
         <up-reloj
+          :fbTotalTime="session.UP.totalTime"
+          :disable="session.UP.disable || session.UP.flag"
           :upText="upText"
           @up-pause="pauseUp"
           @up-start="startUp"
@@ -26,7 +23,7 @@
             <span id="middle">:</span>
             <span id="seconds">{{ minutes }}</span> AM
           </div>
-        </div> -->
+        </div>-->
 
         <!-- <div>
           <input type="text" v-model="newReptile" @keyup.enter="addReptile" />
@@ -41,7 +38,7 @@
               Remove
             </button>
           </li>
-        </ul> -->
+        </ul>-->
       </div>
       <div :class="classRs">
         <rs-reloj @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
@@ -56,12 +53,7 @@
       </div>
 
       <div :class="classAi">
-        <ai-reloj
-          :aiText="aiText"
-          @ai-start="startAi"
-          @ai-stop="stopAi"
-          @ai-ended="flagAi"
-        ></ai-reloj>
+        <ai-reloj :aiText="aiText" @ai-start="startAi" @ai-stop="stopAi" @ai-ended="flagAi"></ai-reloj>
       </div>
       <div :class="classCf2">
         <cf2-reloj
@@ -91,14 +83,13 @@ import Cf1Reloj from "../components/Cf1Reloj.vue";
 import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
-import { db, usersCollection, sessionsCollection } from "../firebase";
+import { sessionsCollection } from "../firebase";
 export default {
   name: "home",
 
   data: () => ({
-    reptiles: [],
     sessions: [],
-    session: [],
+    session: null,
     snackbar: {
       timeout: 9999999,
       text: "",
@@ -124,9 +115,8 @@ export default {
   }),
   firestore() {
     return {
-      user: usersCollection.doc("QuNpemKyZVg5ojagunU5Bnbo7R63"),
-      reptiles: db.collection("reptiles"),
-      sessions: sessionsCollection
+      sessions: sessionsCollection,
+      session: sessionsCollection.doc(this.docKey)
     };
   },
   computed: {
@@ -134,24 +124,17 @@ export default {
       return this.$store.getters.sesionId;
     }
   },
-  mounted() {},
+
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
   methods: {
-    addReptile: function() {
-      this.$firestore.reptiles.add({
-        name: this.newReptile,
-        timestamp: moment(new Date()).format("YYYY-MM-DD HH:mm Z")
-      });
-      this.newReptile = "";
-    },
-    deleteReptile: function(reptile) {
-      this.$firestore.reptiles.doc(reptile[".key"]).delete();
-    },
-    flagUp() {
+    flagUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
         "UP.flag": true,
-        "UP.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+        "UP.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "UP.disable": true,
+        "UP.totalTime": totalTime
       });
+      this.pauseUp(totalTime);
     },
     flagAi() {
       //Guardar en la base de datos que se comio el UP
@@ -189,11 +172,13 @@ export default {
           this.cf1Text = "TARDIA POR CAFE1";
         });
     },
-    pauseUp() {
+    pauseUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
         "UP.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "UP.totalTime": totalTime,
         status: "Disponible"
       });
+
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
       this.classCf2 = "col-md-4 d-flex align-center justify-center";
@@ -201,10 +186,12 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startUp() {
+    startUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        status: "Uso Personal"
+        status: "Uso Personal",
+        "UP.totalTime": totalTime
       });
+
       this.classUp = "col-md-12 d-flex align-center justify-center";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -312,7 +299,6 @@ export default {
 </script>
 
 <style lang="stylus">
-
 @font-face {
   font-family: 'digital-7';
   src: url('../assets/digital-7.ttf');
@@ -322,14 +308,15 @@ export default {
   display: none;
 }
 
-.footer{
-  position:fixed !important
-  bottom:0px
+.footer {
+  position: fixed !important;
+  bottom: 0px;
+}
 
-}
 .theme--dark.v-btn.v-btn--disabled:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-    background-color: #949698 !important;
+  background-color: #949698 !important;
 }
+
 .timer {
   font-size: 3.5rem;
   line-height: 1;

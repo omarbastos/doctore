@@ -5,8 +5,15 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    sesionId: localStorage.getItem("sesionId") || null,
-    user: JSON.parse(localStorage.getItem("user")) || null
+    sesionId: localStorage.getItem("sesionId") || "",
+    user: {
+      level: localStorage.getItem("userLevel") || "",
+      grupo: localStorage.getItem("userGrupo") || "",
+      fullname: localStorage.getItem("userFullName") || "",
+      createdAt: localStorage.getItem("userCreatedAt") || "",
+      uid: localStorage.getItem("uid") || "",
+      email: localStorage.getItem("userEmail") || ""
+    }
   },
   mutations: {
     STORE_SESION(state, id) {
@@ -14,12 +21,28 @@ export default new Vuex.Store({
       localStorage.setItem("sesionId", id);
     },
     STORE_USUARIO(state, user) {
-      state.user = user;
-      localStorage.setItem("user", JSON.stringify(user));
+      state.user.grupo = user.grupo;
+      state.user.level = user.level;
+      state.user.email = user.email;
+      state.user.uid = user.uid;
+      state.user.fullname = user.fullname;
+      state.user.createdAt = user.createdAt;
+
+      localStorage.setItem("userGrupo", user.grupo);
+      localStorage.setItem("userLevel", user.level);
+      localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("uid", user.uid);
+      localStorage.setItem("userFullName", user.fullname);
+      localStorage.setItem("userCreatedAt", user.createdAt);
     },
     LOGOUT(state) {
-      state.sesionId = null;
-      state.user = null;
+      state.sesionId = "";
+      state.user.level = "";
+      state.user.email = "";
+      state.user.uid = "";
+      state.user.fullname = "";
+      state.user.createdAt = "";
+      state.user.grupo = "";
       localStorage.clear();
     }
   },
@@ -29,27 +52,37 @@ export default new Vuex.Store({
     },
 
     TRAER_USUARIO: ({ commit }, id) => {
-      usersCollection
-        .doc(id)
-        .get()
-        .then(function(doc) {
-          if (doc.exists) {
-            console.log("Document data:", doc.data());
-            commit("STORE_USUARIO", doc.data());
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-          }
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        });
+      return new Promise((resolve, reject) => {
+        usersCollection
+          .doc(id)
+          .get()
+          .then(
+            function(doc) {
+              if (doc.exists) {
+                commit("STORE_USUARIO", doc.data());
+                resolve(doc.data());
+              } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+              }
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
     }
   },
   getters: {
     sesionId: state => state.sesionId,
+    uid: state => state.user.uid,
     userLevel: state => state.user.level,
     userGrupo: state => state.user.grupo,
-    fullname: state => state.user.fullname
+    userFullName: state => state.user.fullname,
+    userEmail: state => state.user.email,
+    isLoggedIn: state => !!state.user.uid,
+    isMaster: state => (state.user.level === "Master" ? true : false),
+    isSupervisor: state => (state.user.level === "Supervisor" ? true : false),
+    isAgente: state => (state.user.level === "Agente" ? true : false)
   }
 });

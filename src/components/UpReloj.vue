@@ -10,7 +10,7 @@
       <!--     Start TImer -->
       <v-btn
         dark
-        :disabled="disableUP"
+        :disabled="disable"
         id="start"
         x-large
         color="orange darken-4"
@@ -23,13 +23,14 @@
       <v-btn
         dark
         id="stop"
-        :disabled="disableUP"
+        :disabled="disable"
         x-large
         color="red"
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon>mdi-paper-roll</v-icon>{{ upText }}
+        <v-icon>mdi-paper-roll</v-icon>
+        {{ upText }}
       </v-btn>
     </div>
   </div>
@@ -41,14 +42,19 @@ export default {
     upText: {
       type: String,
       default: "PAUSAR USO PERSONAL"
-    }
+    },
+    disable: Boolean,
+    fbTotalTime: Number
+  },
+  created: function() {
+    // `this` hace referencia a la instancia vm
+    this.totalTime = this.fbTotalTime;
   },
   // ========================
   data: () => ({
+    totalTime: null,
     clock: false,
-    disableUP: false,
     timer: null,
-    totalTime: 10,
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
@@ -59,15 +65,14 @@ export default {
       this.timer = setInterval(() => this.countdown(), 1000);
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
-      this.$emit("up-start");
+      this.$emit("up-start", this.totalTime);
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.$emit("up-pause");
-      this.disableUP = true;
+      this.$emit("up-pause", this.totalTime);
     },
     stopTimer: function() {
       clearInterval(this.timer);
@@ -91,7 +96,7 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.$emit("up-ended");
+        this.$emit("up-ended", this.totalTime);
 
         return;
       }
