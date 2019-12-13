@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { usersCollection } from "../firebase";
+import { db, usersCollection, auth } from "../firebase";
+import moment from "moment";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -35,6 +37,7 @@ export default new Vuex.Store({
       localStorage.setItem("userFullName", user.fullname);
       localStorage.setItem("userCreatedAt", user.createdAt);
     },
+
     LOGOUT(state) {
       state.sesionId = "";
       state.user.level = "";
@@ -47,10 +50,123 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    SIGN_IN: (context, user) => {
+      console.log(user.email + " " + user.password);
+      return new Promise((resolve, reject) => {
+        console.log(user.email + " " + user.password);
+        auth.signInWithEmailAndPassword(user.email, user.password).then(
+          docRef => {
+            resolve(docRef);
+          },
+          error => {
+            reject(error);
+          }
+        );
+      });
+    },
     GUARDAR_SESION: ({ commit }, id) => {
       commit("STORE_SESION", id);
     },
+    CREAR_SESION: ({ dispatch, getters }) => {
+      return new Promise((resolve, reject) => {
+        db.collection("sessions")
+          .add({
+            user: getters.uid,
+            fullname: getters.userFullName,
+            tardias: 0,
+            grupo: getters.userGrupo,
+            AI: {
+              flag: false,
+              startedAt: null,
+              flagAt: null,
+              finishedAt: null,
+              totalTime: 10,
+              disable: false
+            },
+            UP: {
+              flag: false,
+              startedAt: null,
+              flagAt: null,
+              finishedAt: null,
+              totalTime: 10,
+              disable: false
+            },
+            CF1: {
+              flag: false,
+              startedAt: null,
+              flagAt: null,
+              finishedAt: null,
+              totalTime: 10,
+              disable: false
+            },
+            CF2: {
+              flag: false,
+              startedAt: null,
+              flagAt: null,
+              finishedAt: null,
+              totalTime: 10,
+              disable: false
+            },
+            RS: {
+              totalTime: null
+            },
+            llegada: {
+              createdAt: moment(new Date()).format(),
+              flag: false
+            },
+            status: {
+              text: "Disponible",
+              valor: 0
+            }
+          })
+          .then(
+            docRef => {
+              dispatch("GUARDAR_SESION", docRef.id);
+              resolve();
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
+    },
 
+    COLLECION_USUARIO: (context, { data, register }) => {
+      return new Promise((resolve, reject) => {
+        usersCollection
+          .doc(data.user.uid)
+          .set({
+            uid: data.user.uid,
+            email: register.email,
+            fullname: register.fullname,
+            level: register.level.state,
+            grupo: register.grupo,
+            createdAt: moment(new Date()).format()
+          })
+          .then(
+            () => {},
+            error => {
+              console.log(error);
+              reject(error);
+            }
+          );
+      });
+    },
+    CREAR_USUARIO: ({ dispatch }, register) => {
+      return new Promise((resolve, reject) => {
+        auth
+          .createUserWithEmailAndPassword(register.email, register.password)
+          .then(
+            data => {
+              dispatch("COLLECION_USUARIO", { data, register });
+              resolve(data);
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
+    },
     TRAER_USUARIO: ({ commit }, id) => {
       return new Promise((resolve, reject) => {
         usersCollection

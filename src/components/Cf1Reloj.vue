@@ -85,7 +85,6 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-
         this.$emit("cf1-ended", this.totalTime);
         return;
       }

@@ -48,8 +48,6 @@
 </template>
 
 <script>
-import { db, auth } from "../firebase";
-import moment from "moment";
 export default {
   props: {
     source: String
@@ -67,75 +65,16 @@ export default {
     onSubmit(ev) {
       ev.preventDefault();
       this.login.email = this.login.email.toLowerCase();
-
-      auth
-        .signInWithEmailAndPassword(this.login.email, this.login.password)
+      this.$store
+        .dispatch("SIGN_IN", this.login)
         .then(data => {
-          console.log(data);
           this.uid = data.user.uid;
-          console.log(`Antes del traer usuario este es el uid ${this.uid}`);
-
           this.$store.dispatch("TRAER_USUARIO", data.user.uid).then(
             response => {
               if (response.level === "Agente") {
-                db.collection("sessions")
-                  .add({
-                    user: this.uid,
-                    fullname: response.fullname,
-                    tardias: 0,
-                    grupo: response.grupo,
-                    AI: {
-                      flag: false,
-                      startedAt: null,
-                      flagAt: null,
-                      finishedAt: null,
-                      totalTime: 10,
-                      disable: null
-                    },
-                    UP: {
-                      flag: false,
-                      startedAt: null,
-                      flagAt: null,
-                      finishedAt: null,
-                      totalTime: 10,
-                      disable: null
-                    },
-                    CF1: {
-                      flag: false,
-                      startedAt: null,
-                      flagAt: null,
-                      finishedAt: null,
-                      totalTime: 10,
-                      disable: null
-                    },
-                    CF2: {
-                      flag: false,
-                      startedAt: null,
-                      flagAt: null,
-                      finishedAt: null,
-                      totalTime: 10,
-                      disable: null
-                    },
-                    RS: {
-                      totalTime: null
-                    },
-                    llegada: {
-                      createdAt: moment(new Date()).format(),
-                      flag: false
-                    },
-                    status: {
-                      text: "Disponible",
-                      valor: 0
-                    }
-                  })
-                  .then(docRef => {
-                    console.log(docRef.id);
-                    this.$store.dispatch("GUARDAR_SESION", docRef.id);
-                    this.$router.push({ name: "Agente" });
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  });
+                this.$store.dispatch("CREAR_SESION").then(() => {
+                  this.$router.push({ name: "Agente" });
+                });
               } else {
                 this.$router.push({ name: response.level });
               }

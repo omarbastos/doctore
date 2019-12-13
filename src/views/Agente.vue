@@ -45,7 +45,7 @@
       </div>
       <div :class="classCf1">
         <cf1-reloj
-          :disable="session.CF1.disable || session.CF1.flag"
+          :disable="session.CF1.disable"
           :fbTotalTime="session.CF1.totalTime"
           :cf2Text="cf2Text"
           @cafe1-stop="stopCafe1"
@@ -57,7 +57,7 @@
       <div :class="classAi">
         <ai-reloj
           :fbTotalTime="session.AI.totalTime"
-          :disable="session.AI.disable || session.AI.flag"
+          :disable="session.AI.disable"
           :aiText="aiText"
           @ai-start="startAi"
           @ai-stop="stopAi"
@@ -67,7 +67,7 @@
       <div :class="classCf2">
         <cf2-reloj
           :fbTotalTime="session.CF2.totalTime"
-          :disable="session.CF2.disable || session.CF2.flag"
+          :disable="session.CF2.disable"
           :cf2Text="cf2Text"
           @cafe2-stop="stopCafe2"
           @cafe2-start="startCafe2"
@@ -161,7 +161,6 @@ export default {
         .update({
           "AI.flag": true,
           "AI.flagAt": moment(new Date()).format(),
-          "AI.disable": true,
           "AI.totalTime": totalTime,
           tardias: increment
         })
@@ -170,12 +169,13 @@ export default {
         });
     },
 
-    flagCf2() {
+    flagCf2(totaltime) {
       this.$firestore.sessions
         .doc(this.docKey)
         .update({
           "CF2.flag": true,
           "CF2.flagAt": moment(new Date()).format(),
+          "CF2.totaltime": totaltime,
           tardias: increment
         })
         .then(() => {
@@ -189,7 +189,6 @@ export default {
         .update({
           "CF1.flag": true,
           "CF1.flagAt": moment(new Date()).format(),
-          "CF1.disable": true,
           "CF1.totalTime": totalTime,
           tardias: increment
         })

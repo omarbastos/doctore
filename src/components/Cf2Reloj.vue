@@ -91,7 +91,7 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.$emit("cf2-ended");
+        this.$emit("cf2-ended", this.totalTime);
         return;
       }
     }

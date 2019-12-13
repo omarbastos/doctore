@@ -98,8 +98,6 @@
 </template>
 
 <script>
-import { auth, usersCollection } from "../firebase.js";
-import moment from "moment";
 export default {
   props: {
     source: String
@@ -142,29 +140,11 @@ export default {
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
-      auth
-        .createUserWithEmailAndPassword(
-          this.register.email,
-          this.register.password
-        )
-        .then(user => {
-          // create user obj
-          usersCollection
-            .doc(user.user.uid)
-            .set({
-              uid: user.user.uid,
-              email: this.register.email,
-              fullname: this.register.fullname,
-              level: this.register.level.state,
-              grupo: this.register.grupo,
-              createdAt: moment(new Date()).format()
-            })
-            .then(() => {
-              this.$router.push("/login");
-            })
-            .catch(err => {
-              console.log(err);
-            });
+      this.$store
+        .dispatch("CREAR_USUARIO", this.register)
+        .then(() => {
+          this.regiser = null;
+          this.$router.push({ name: "Master" });
         })
         .catch(err => {
           this.errors = [err.message];
