@@ -10,7 +10,7 @@
       <!--     Start TImer -->
       <v-btn
         dark
-        :disabled="disableUP"
+        :disabled="disable"
         id="start"
         x-large
         color="purple"
@@ -20,15 +20,7 @@
         <v-icon>mdi-food</v-icon>ALMUERZO
       </v-btn>
       <!--     Pause Timer -->
-      <v-btn
-        dark
-        id="stop"
-        :disabled="disableUP"
-        x-large
-        color="red"
-        v-if="timer"
-        @click="stopTimer"
-      >
+      <v-btn dark id="stop" :disabled="disable" x-large color="red" v-if="timer" @click="stopTimer">
         <v-icon>mdi-food-off</v-icon>
         {{ aiText }}
       </v-btn>
@@ -37,24 +29,23 @@
 </template>
 
 <script>
-import { sessionsCollection } from "../firebase";
 export default {
   props: {
     aiText: {
       type: String,
       default: "DETENER ALMUERZO"
-    }
+    },
+    disable: Boolean,
+    fbTotalTime: Number
   },
-  firestore() {
-    return {
-      sessions: sessionsCollection,
-      session: sessionsCollection.doc(this.$store.getters.sesionId)
-    };
+  created: function() {
+    // `this` hace referencia a la instancia vm
+    this.totalTime = this.fbTotalTime;
   },
   // ========================
   data: () => ({
     clock: false,
-    disableUP: false,
+
     timer: null,
     totalTime: 5,
     resetButton: false,
@@ -67,22 +58,22 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
-      this.$emit("ai-start");
+      this.$emit("ai-start", this.totalTime);
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
+      this.disable = true;
     },
     stopTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
-      this.$emit("ai-stop");
+      this.disable = true;
+      this.$emit("ai-stop", this.totalTime);
     },
     resetTimer: function() {
       this.totalTime = 25 * 60;
@@ -100,8 +91,8 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
+        this.$emit("ai-ended", this.totalTime);
 
-        this.$emit("ai-ended");
         return;
       }
     }

@@ -157,7 +157,7 @@ export default {
               fullname: this.register.fullname,
               level: this.register.level.state,
               grupo: this.register.grupo,
-              createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm Z")
+              createdAt: moment(new Date()).format()
             })
             .then(() => {
               this.$router.push("/login");

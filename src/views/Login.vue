@@ -71,6 +71,7 @@ export default {
       auth
         .signInWithEmailAndPassword(this.login.email, this.login.password)
         .then(data => {
+          console.log(data);
           this.uid = data.user.uid;
           console.log(`Antes del traer usuario este es el uid ${this.uid}`);
 
@@ -87,10 +88,13 @@ export default {
                       flag: false,
                       startedAt: null,
                       flagAt: null,
-                      finishedAt: null
+                      finishedAt: null,
+                      totalTime: 10,
+                      disable: null
                     },
                     UP: {
                       flag: false,
+                      startedAt: null,
                       flagAt: null,
                       finishedAt: null,
                       totalTime: 10,
@@ -100,21 +104,23 @@ export default {
                       flag: false,
                       startedAt: null,
                       flagAt: null,
-                      finishedAt: null
+                      finishedAt: null,
+                      totalTime: 10,
+                      disable: null
                     },
                     CF2: {
                       flag: false,
                       startedAt: null,
                       flagAt: null,
-                      finishedAt: null
+                      finishedAt: null,
+                      totalTime: 10,
+                      disable: null
                     },
                     RS: {
                       totalTime: null
                     },
                     llegada: {
-                      createdAt: moment(new Date()).format(
-                        "YYYY-MM-DD HH:mm Z"
-                      ),
+                      createdAt: moment(new Date()).format(),
                       flag: false
                     },
                     status: {

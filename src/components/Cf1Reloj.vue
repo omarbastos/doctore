@@ -10,7 +10,7 @@
       <!--     Start TImer -->
       <v-btn
         dark
-        :disabled="disableUP"
+        :disabled="disable"
         id="start"
         x-large
         color="indigo"
@@ -20,16 +20,9 @@
         <v-icon>mdi-coffee</v-icon>CAFE 1
       </v-btn>
       <!--     Pause Timer -->
-      <v-btn
-        dark
-        id="stop"
-        :disabled="disableUP"
-        x-large
-        color="red"
-        v-if="timer"
-        @click="stopTimer"
-      >
-        <v-icon>mdi-coffee-off</v-icon>{{ cf1Text }}
+      <v-btn dark id="stop" :disabled="disable" x-large color="red" v-if="timer" @click="stopTimer">
+        <v-icon>mdi-coffee-off</v-icon>
+        {{ cf1Text }}
       </v-btn>
     </div>
   </div>
@@ -41,12 +34,18 @@ export default {
     cf1Text: {
       type: String,
       default: "DETENER CAFE1"
-    }
+    },
+    disable: Boolean,
+    fbTotalTime: Number
+  },
+  created: function() {
+    // `this` hace referencia a la instancia vm
+    this.totalTime = this.fbTotalTime;
   },
   // ========================
   data: () => ({
     clock: false,
-    disableUP: false,
+
     timer: null,
     totalTime: 5,
     resetButton: false,
@@ -59,30 +58,24 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
-      this.$emit("cafe1-start");
+      this.$emit("cafe1-start", this.totalTime);
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
+      this.disable = true;
     },
     stopTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
-      this.$emit("cafe1-stop");
+      this.disable = true;
+      this.$emit("cafe1-stop", this.totalTime);
     },
-    resetTimer: function() {
-      this.totalTime = 25 * 60;
-      clearInterval(this.timer);
-      this.timer = null;
-      this.resetButton = false;
-      this.title = "Let the countdown begin!!";
-    },
+
     padTime: function(time) {
       return (time < 10 ? "0" : "") + time;
     },
@@ -92,7 +85,8 @@ export default {
       } else {
         this.totalTime = 0;
         clearInterval(this.timer);
-        this.$emit("cf1-ended");
+
+        this.$emit("cf1-ended", this.totalTime);
         return;
       }
     }

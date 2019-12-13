@@ -41,10 +41,12 @@
         </ul>-->
       </div>
       <div :class="classRs">
-        <rs-reloj @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
+        <rs-reloj :fbTotalTime="session.RS.totalTime" @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
       </div>
       <div :class="classCf1">
         <cf1-reloj
+          :disable="session.CF1.disable || session.CF1.flag"
+          :fbTotalTime="session.CF1.totalTime"
           :cf2Text="cf2Text"
           @cafe1-stop="stopCafe1"
           @cafe1-start="startCafe1"
@@ -53,10 +55,19 @@
       </div>
 
       <div :class="classAi">
-        <ai-reloj :aiText="aiText" @ai-start="startAi" @ai-stop="stopAi" @ai-ended="flagAi"></ai-reloj>
+        <ai-reloj
+          :fbTotalTime="session.AI.totalTime"
+          :disable="session.AI.disable || session.AI.flag"
+          :aiText="aiText"
+          @ai-start="startAi"
+          @ai-stop="stopAi"
+          @ai-ended="flagAi"
+        ></ai-reloj>
       </div>
       <div :class="classCf2">
         <cf2-reloj
+          :fbTotalTime="session.CF2.totalTime"
+          :disable="session.CF2.disable || session.CF2.flag"
           :cf2Text="cf2Text"
           @cafe2-stop="stopCafe2"
           @cafe2-start="startCafe2"
@@ -85,17 +96,14 @@ import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
 import { sessionsCollection, increment } from "../firebase";
 export default {
+  props: {
+    fbTotalTime: Number
+  },
   name: "home",
 
   data: () => ({
     sessions: [],
-    session: {
-      UP: {
-        totalTime: 10,
-        disable: false,
-        flag: false
-      }
-    },
+    session: {},
     snackbar: {
       timeout: 9999999,
       text: "",
@@ -125,6 +133,7 @@ export default {
       session: sessionsCollection.doc(this.docKey)
     };
   },
+
   computed: {
     docKey() {
       return this.$store.getters.sesionId;
@@ -134,22 +143,26 @@ export default {
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
   methods: {
     flagUp(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "UP.flag": true,
-        "UP.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
-        "UP.disable": true,
-        "UP.totalTime": totalTime,
-        tardias: increment
-      });
-      this.pauseUp(totalTime);
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "UP.flag": true,
+          "UP.flagAt": moment(new Date()).format(),
+          "UP.disable": true,
+          "UP.totalTime": totalTime,
+          tardias: increment
+        })
+        .then(() => this.pauseUp(totalTime));
     },
-    flagAi() {
+    flagAi(totalTime) {
       //Guardar en la base de datos que se comio el UP
       this.$firestore.sessions
         .doc(this.docKey)
         .update({
           "AI.flag": true,
-          "AI.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+          "AI.flagAt": moment(new Date()).format(),
+          "AI.disable": true,
+          "AI.totalTime": totalTime,
           tardias: increment
         })
         .then(() => {
@@ -162,7 +175,7 @@ export default {
         .doc(this.docKey)
         .update({
           "CF2.flag": true,
-          "CF2.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+          "CF2.flagAt": moment(new Date()).format(),
           tardias: increment
         })
         .then(() => {
@@ -170,12 +183,14 @@ export default {
         });
     },
 
-    flagCf1() {
+    flagCf1(totalTime) {
       this.$firestore.sessions
         .doc(this.docKey)
         .update({
           "CF1.flag": true,
-          "CF1.flagAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+          "CF1.flagAt": moment(new Date()).format(),
+          "CF1.disable": true,
+          "CF1.totalTime": totalTime,
           tardias: increment
         })
         .then(() => {
@@ -184,7 +199,7 @@ export default {
     },
     pauseUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "UP.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "UP.finishedAt": moment(new Date()).format(),
         "UP.totalTime": totalTime,
         "status.text": "Disponible",
         "status.valor": 0
@@ -211,12 +226,13 @@ export default {
       this.classAi = "hidden";
       this.classHora = "hidden";
     },
-    stopAi() {
+    stopAi(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "AI.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "AI.finishedAt": moment(new Date()).format(),
         "status.text": "Disponible",
-
-        "status.valor": 0
+        "status.valor": 0,
+        "AI.totalTime": totalTime,
+        "AI.disable": true
       });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
@@ -225,11 +241,13 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startAi() {
+    startAi(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "AI.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
-        "status.text": "En Almuerzo",
-        "status.valor": 4
+        "AI1.finishedAt": moment(new Date()).format(),
+        "status.text": "Disponible",
+        "status.valor": 0,
+        "AI1.totalTime": totalTime,
+        "AI1.disable": true
       });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
@@ -264,11 +282,13 @@ export default {
       this.classAi = "hidden";
       this.classHora = "hidden";
     },
-    stopCafe1() {
+    stopCafe1(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "CF1.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "CF1.finishedAt": moment(new Date()).format(),
         "status.text": "Disponible",
-        "status.valor": 0
+        "status.valor": 0,
+        "CF1.totalTime": totalTime,
+        "CF1.disable": true
       });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
@@ -277,11 +297,13 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startCafe1() {
+    startCafe1(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "CF1.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "CF1.startedAt": moment(new Date()).format(),
         "status.text": "En Café",
-        "status.valor": 1
+        "status.valor": 1,
+
+        "CF1.totalTime": totalTime
       });
       this.classUp = "hidden";
       this.classCf1 = "col-md-12 d-flex align-center justify-center";
@@ -290,11 +312,13 @@ export default {
       this.classAi = "hidden";
       this.classHora = "hidden";
     },
-    stopCafe2() {
+    stopCafe2(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "CF2.finishedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "CF2.finishedAt": moment(new Date()).format(),
         "status.text": "Disponible",
-        "status.valor": 0
+        "status.valor": 0,
+        "CF2.totalTime": totalTime,
+        "CF2.disable": true
       });
       this.classUp = "col-md-4 d-flex align-center justify-center";
       this.classCf1 = "col-md-4 d-flex align-center justify-center";
@@ -303,11 +327,13 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startCafe2() {
+    startCafe2(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "CF2.startedAt": moment(new Date()).format("YYYY-MM-DD HH:mm Z"),
+        "CF2.startedAt": moment(new Date()).format(),
         "status.text": "En Café",
-        "status.valor": 1
+        "status.valor": 1,
+
+        "CF2.totalTime": totalTime
       });
       this.classUp = "hidden";
       this.classCf1 = "hidden";

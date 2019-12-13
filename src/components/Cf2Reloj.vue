@@ -10,7 +10,7 @@
       <!--     Start TImer -->
       <v-btn
         dark
-        :disabled="disableUP"
+        :disabled="disable"
         id="start"
         x-large
         color="indigo"
@@ -20,16 +20,9 @@
         <v-icon>mdi-coffee</v-icon>CAFE 2
       </v-btn>
       <!--     Pause Timer -->
-      <v-btn
-        dark
-        id="stop"
-        :disabled="disableUP"
-        x-large
-        color="red"
-        v-if="timer"
-        @click="stopTimer"
-      >
-        <v-icon>mdi-coffee-off</v-icon>{{ cf2Text }}
+      <v-btn dark id="stop" :disabled="disable" x-large color="red" v-if="timer" @click="stopTimer">
+        <v-icon>mdi-coffee-off</v-icon>
+        {{ cf2Text }}
       </v-btn>
     </div>
   </div>
@@ -41,17 +34,23 @@ export default {
     cf2Text: {
       type: String,
       default: "DETENER CAFE2"
-    }
+    },
+    disable: Boolean,
+    fbTotalTime: Number
   },
   // ========================
   data: () => ({
     clock: false,
-    disableUP: false,
+
     timer: null,
     totalTime: 10,
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
+  created: function() {
+    // `this` hace referencia a la instancia vm
+    this.totalTime = this.fbTotalTime;
+  },
   // ========================
   methods: {
     startTimer: function() {
@@ -59,22 +58,22 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
-      this.$emit("cafe2-start");
+      this.$emit("cafe2-start", this.totalTime);
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
+      this.disable = true;
     },
     stopTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.disableUP = true;
-      this.$emit("cafe2-stop");
+      this.disable = true;
+      this.$emit("cafe2-stop", this.totalTime);
     },
     resetTimer: function() {
       this.totalTime = 25 * 60;

@@ -37,6 +37,9 @@
 
 <script>
 export default {
+  props: {
+    fbTotalTime: Number
+  },
   // ========================
   data: () => ({
     clock: false,
@@ -46,6 +49,10 @@ export default {
     resetButton: false,
     title: "Let the countdown begin!!"
   }),
+  created: function() {
+    // `this` hace referencia a la instancia vm
+    this.totalTime = this.fbTotalTime;
+  },
   // ========================
   methods: {
     startTimer: function() {

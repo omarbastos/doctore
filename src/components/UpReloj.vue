@@ -52,7 +52,7 @@ export default {
   },
   // ========================
   data: () => ({
-    totalTime: null,
+    totalTime: 5,
     clock: false,
     timer: null,
     resetButton: false,
@@ -80,13 +80,7 @@ export default {
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
     },
-    resetTimer: function() {
-      this.totalTime = 25 * 60;
-      clearInterval(this.timer);
-      this.timer = null;
-      this.resetButton = false;
-      this.title = "Let the countdown begin!!";
-    },
+
     padTime: function(time) {
       return (time < 10 ? "0" : "") + time;
     },
