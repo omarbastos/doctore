@@ -32,6 +32,15 @@ const UserSchema = new Schema({
   grupo: { 
     type: String,
     // required: true
+  },
+  isActive: {
+    // Cambiará si está loggeado o no, será true cuando inicie sesión, false SOLO cuando de logout, si queda siendo true e inicia sesion, buscará la última sesión con este user ID, comprobará si el día es el mismo, en tal caso, cargará esa sesión otra vez, si no, la cerrará y creará una nueva.
+    type: Boolean,
+    default: false
+  },
+  lastSessionId: {
+    // Cuando se inicie una nueva sesión, se guardará el id acá para hacer la busqueda mas rapido
+    type: String
   }
 })
 
