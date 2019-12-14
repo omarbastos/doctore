@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { db, usersCollection, auth } from "../firebase";
+import { db, usersCollection, auth, sessionsCollection } from "../firebase";
 import moment from "moment";
 
 Vue.use(Vuex);
@@ -29,7 +29,6 @@ export default new Vuex.Store({
       state.user.uid = user.uid;
       state.user.fullname = user.fullname;
       state.user.createdAt = user.createdAt;
-
       localStorage.setItem("userGrupo", user.grupo);
       localStorage.setItem("userLevel", user.level);
       localStorage.setItem("userEmail", user.email);
@@ -37,11 +36,7 @@ export default new Vuex.Store({
       localStorage.setItem("userFullName", user.fullname);
       localStorage.setItem("userCreatedAt", user.createdAt);
     },
-
     LOGOUT(state) {
-      db.collection("users").doc(state.user.uid).update({
-        isActive: false
-      })
       state.sesionId = "";
       state.user.level = "";
       state.user.email = "";
@@ -49,14 +44,33 @@ export default new Vuex.Store({
       state.user.fullname = "";
       state.user.createdAt = "";
       state.user.grupo = "";
-      localStorage.clear();      
+      localStorage.clear();
     }
   },
   actions: {
-    SIGN_IN: (context, user) => {
-      console.log(user.email + " " + user.password);
+    SIGN_OUT: ({ commit, getters }) => {
       return new Promise((resolve, reject) => {
-        console.log(user.email + " " + user.password);
+        auth.signOut().then(
+          res => {
+            if (getters.userLevel === "Agente") {
+              sessionsCollection.doc(getters.sesionId).update({
+                "status.text": "Desconectado",
+                "status.valor": "5"
+              });
+            }
+            commit("LOGOUT");
+            resolve(res);
+          },
+          error => {
+            reject(error);
+          }
+        );
+      });
+    },
+    SIGN_IN: (context, user) => {
+      // console.log(user.email + " " + user.password);
+      return new Promise((resolve, reject) => {
+        //console.log(user.email + " " + user.password);
         auth.signInWithEmailAndPassword(user.email, user.password).then(
           docRef => {
             resolve(docRef);
@@ -67,15 +81,30 @@ export default new Vuex.Store({
         );
       });
     },
-    GUARDAR_SESION: ({ commit, getters }, id) => {
-      db.collection("users").doc(getters.uid).update({
-        isActive: true
-      })
-      commit("STORE_SESION", id);
+    GUARDAR_SESION: ({ commit }, id) => {
+      return new Promise((resolve, reject) =>
+        sessionsCollection
+          .doc(id)
+          .update({
+            "status.text": "Disponible",
+            "status.valor": "0"
+          })
+          .then(
+            () => {
+              commit("STORE_SESION", id);
+
+              console.log("Ahora si se guardo la session");
+              resolve();
+            },
+            error => {
+              reject(error);
+            }
+          )
+      );
     },
     CREAR_SESION: ({ dispatch, getters }) => {
       return new Promise((resolve, reject) => {
-        let fecha = new Date()
+        let fecha = new Date();
 
         db.collection("sessions")
           .add({
@@ -129,13 +158,18 @@ export default new Vuex.Store({
           })
           .then(
             docRef => {
-              dispatch("GUARDAR_SESION", docRef.id);
-              console.log('llega hasta aca')
-              db.collection("users").doc(getters.uid).update({
-                lastSession: moment(fecha).format('MMM Do YY'),
-                lastSessionID: docRef.id,
-              })
-              resolve();
+              dispatch("GUARDAR_SESION", docRef.id).then(() =>
+                db
+                  .collection("users")
+                  .doc(getters.uid)
+                  .update({
+                    lastSession: moment(fecha).format("MMM Do YY"),
+                    lastSessionID: docRef.id
+                  })
+                  .then(() => {
+                    resolve();
+                  })
+              );
             },
             error => {
               reject(error);
@@ -155,7 +189,6 @@ export default new Vuex.Store({
             level: register.level.state,
             grupo: register.grupo,
             createdAt: moment(new Date()).format(),
-            isActive: false, // Para mostrar como activo o no en la tabla
             lastSession: null, // Fecha de la ultima sesión para comparar si tiene o no una sesión hoy
             lastSessionID: null // Para facilitar traer la información de una sesión ya iniciada hoy
           })

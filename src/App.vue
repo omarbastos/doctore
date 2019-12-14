@@ -42,8 +42,6 @@
 </template>
 
 <script>
-import { auth } from "./firebase";
-
 export default {
   name: "App",
   components: {},
@@ -52,10 +50,9 @@ export default {
   computed: {},
   methods: {
     logout() {
-      auth
-        .signOut()
+      this.$store
+        .dispatch("SIGN_OUT")
         .then(() => {
-          this.$store.commit("LOGOUT");
           this.$router.push("/login");
         })
         .catch(err => {

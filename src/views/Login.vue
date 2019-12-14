@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import moment from "moment"
+import moment from "moment";
 
 export default {
   props: {
@@ -74,21 +74,29 @@ export default {
           this.$store.dispatch("TRAER_USUARIO", data.user.uid).then(
             response => {
               if (response.level === "Agente") {
-                console.log(response.lastSession + 'y' + moment().format('MMM Do YY'))
+                console.log(
+                  response.lastSession + "y" + moment().format("MMM Do YY")
+                );
                 if (!response.lastSession) {
                   // El usuario NUNCA ha iniciado sesión
                   this.$store.dispatch("CREAR_SESION").then(() => {
                     this.$router.push({ name: "Agente" });
                   });
-                } else if (response.lastSession == moment().format('MMM Do YY') ) {
+                } else if (
+                  response.lastSession == moment().format("MMM Do YY")
+                ) {
                   // El usuario tiene una sesión cuya fecha es la misma que hoy.
                   // Hay que guardar en el user, lastSession que será la fecha de la última sesión y lastSessionID que será el id para traer las cosas mas rápido
                   // console.log('El usuario ya ha iniciado sesión hoy')
-                  
-                  this.$store.dispatch("GUARDAR_SESION", response.lastSessionID).then(() => {
-                    this.$router.push({ name: "Agente" });
-                  });
 
+                  this.$store
+                    .dispatch("GUARDAR_SESION", response.lastSessionID)
+                    .then(() => {
+                      console.log(
+                        "La sesion es" + this.$store.getters.sesionId
+                      );
+                      this.$router.push({ name: "Agente" });
+                    });
                 } else {
                   // El usuario ha iniciado sesión antes pero no hoy
                   this.$store.dispatch("CREAR_SESION").then(() => {
