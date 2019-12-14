@@ -39,6 +39,9 @@ export default new Vuex.Store({
     },
 
     LOGOUT(state) {
+      db.collection("users").doc(state.user.uid).update({
+        isActive: false
+      })
       state.sesionId = "";
       state.user.level = "";
       state.user.email = "";
@@ -46,7 +49,7 @@ export default new Vuex.Store({
       state.user.fullname = "";
       state.user.createdAt = "";
       state.user.grupo = "";
-      localStorage.clear();
+      localStorage.clear();      
     }
   },
   actions: {
@@ -64,11 +67,16 @@ export default new Vuex.Store({
         );
       });
     },
-    GUARDAR_SESION: ({ commit }, id) => {
+    GUARDAR_SESION: ({ commit, getters }, id) => {
+      db.collection("users").doc(getters.uid).update({
+        isActive: true
+      })
       commit("STORE_SESION", id);
     },
     CREAR_SESION: ({ dispatch, getters }) => {
       return new Promise((resolve, reject) => {
+        let fecha = new Date()
+
         db.collection("sessions")
           .add({
             user: getters.uid,
@@ -111,7 +119,7 @@ export default new Vuex.Store({
               totalTime: null
             },
             llegada: {
-              createdAt: moment(new Date()).format(),
+              createdAt: moment(fecha).format(),
               flag: false
             },
             status: {
@@ -122,6 +130,11 @@ export default new Vuex.Store({
           .then(
             docRef => {
               dispatch("GUARDAR_SESION", docRef.id);
+              console.log('llega hasta aca')
+              db.collection("users").doc(getters.uid).update({
+                lastSession: moment(fecha).format('MMM Do YY'),
+                lastSessionID: docRef.id,
+              })
               resolve();
             },
             error => {
@@ -141,7 +154,10 @@ export default new Vuex.Store({
             fullname: register.fullname,
             level: register.level.state,
             grupo: register.grupo,
-            createdAt: moment(new Date()).format()
+            createdAt: moment(new Date()).format(),
+            isActive: false, // Para mostrar como activo o no en la tabla
+            lastSession: null, // Fecha de la ultima sesión para comparar si tiene o no una sesión hoy
+            lastSessionID: null // Para facilitar traer la información de una sesión ya iniciada hoy
           })
           .then(
             () => {},
