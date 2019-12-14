@@ -60,6 +60,7 @@ export default {
       var cf = 0;
       var ai = 0;
       var rs = 0;
+      var off = 0;
       for (var i = 0; i < result.length; ++i) {
         switch (result[i]) {
           case 0:
@@ -77,11 +78,14 @@ export default {
           case 4:
             ai++;
             break;
+          case 5:
+            off++;
+            break;
           default:
             break;
         }
       }
-      var series = [on, up, cf, ai, rs];
+      var series = [on, up, cf, ai, rs, off];
       return series;
     }
   },

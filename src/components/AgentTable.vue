@@ -163,6 +163,8 @@ export default {
         case 2:
           return "mdi-toilet";
 
+        case 5:
+          return "mdi-account-off";
         default:
       }
     }

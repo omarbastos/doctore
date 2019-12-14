@@ -58,7 +58,7 @@ export default new Vuex.Store({
             if (getters.userLevel === "Agente") {
               sessionsCollection.doc(getters.sesionId).update({
                 "status.text": "Desconectado",
-                "status.valor": "5"
+                "status.valor": 5
               });
             }
             commit("LOGOUT");
@@ -90,7 +90,8 @@ export default new Vuex.Store({
           .doc(id)
           .update({
             "status.text": "Disponible",
-            "status.valor": "0"
+
+            "status.valor": 0
           })
           .then(
             () => {

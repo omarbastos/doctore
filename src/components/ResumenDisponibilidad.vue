@@ -2,12 +2,7 @@
   <div class="orange-gradient justify-center d-flex my-4">
     <div class="chart-wrap">
       <div id="chart">
-        <apexchart
-          type="donut"
-          width="500"
-          :options="chartOptions"
-          :series="series"
-        />
+        <apexchart type="donut" width="500" :options="chartOptions" :series="series" />
       </div>
     </div>
   </div>
@@ -71,13 +66,21 @@ export default {
           autoSelected: "zoom"
         }
       },
-      colors: ["#4BB543", "#e95f18", "#3F51B5", "#A538B6", "#836357"],
+      colors: [
+        "#4BB543",
+        "#e95f18",
+        "#3F51B5",
+        "#A538B6",
+        "#836357",
+        "#ff0000"
+      ],
       labels: [
         "Disponible",
         "Uso Personal",
         "Café",
         "Almuerzo",
-        "Reunion Supervisor"
+        "Reunion Supervisor",
+        "Desconectado"
       ],
 
       dataLabels: {

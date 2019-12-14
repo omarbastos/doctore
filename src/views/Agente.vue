@@ -242,11 +242,11 @@ export default {
     },
     startAi(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "AI.finishedAt": moment(new Date()).format(),
-        "status.text": "Disponible",
-        "status.valor": 0,
-        "AI.totalTime": totalTime,
-        "AI.disable": true
+        "AI.startedAt": moment(new Date()).format(),
+        "status.text": "En Almuerzo",
+        "status.valor": 4,
+
+        "AI.totalTime": totalTime
       });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
