@@ -14,7 +14,8 @@ export default new Vuex.Store({
       fullname: localStorage.getItem("userFullName") || "",
       createdAt: localStorage.getItem("userCreatedAt") || "",
       uid: localStorage.getItem("uid") || "",
-      email: localStorage.getItem("userEmail") || ""
+      email: localStorage.getItem("userEmail") || "",
+      horario: localStorage.getItem("userHorario") || []
     }
   },
   mutations: {
@@ -29,12 +30,14 @@ export default new Vuex.Store({
       state.user.uid = user.uid;
       state.user.fullname = user.fullname;
       state.user.createdAt = user.createdAt;
+      state.user.horario = user.horario;
       localStorage.setItem("userGrupo", user.grupo);
       localStorage.setItem("userLevel", user.level);
       localStorage.setItem("userEmail", user.email);
       localStorage.setItem("uid", user.uid);
       localStorage.setItem("userFullName", user.fullname);
       localStorage.setItem("userCreatedAt", user.createdAt);
+      localStorage.setItem("userHorario", user.horario);
     },
     LOGOUT(state) {
       state.sesionId = "";
@@ -44,7 +47,7 @@ export default new Vuex.Store({
       state.user.fullname = "";
       state.user.createdAt = "";
       state.user.grupo = "";
-      localStorage.clear();
+      (state.user.horario = ""), localStorage.clear();
     }
   },
   actions: {
@@ -105,13 +108,27 @@ export default new Vuex.Store({
     CREAR_SESION: ({ dispatch, getters }) => {
       return new Promise((resolve, reject) => {
         let fecha = new Date();
+        let horario = getters.userHorario;
+        let currentDateMinutes = moment(fecha).minute();
 
+        let currentDateHours = moment(fecha).hours();
+        let currentTime = currentDateHours * 60 + currentDateMinutes;
+        let horarioDate = horario[moment(fecha).day()];
+        console.log(horarioDate);
+        let flagLlegada = false;
+        console.log(currentTime > horarioDate);
+        if (currentTime > horarioDate) {
+          flagLlegada = true;
+        } else {
+          flagLlegada = false;
+        }
         db.collection("sessions")
           .add({
             user: getters.uid,
             fullname: getters.userFullName,
             tardias: 0,
             grupo: getters.userGrupo,
+
             AI: {
               flag: false,
               startedAt: null,
@@ -149,7 +166,7 @@ export default new Vuex.Store({
             },
             llegada: {
               createdAt: moment(fecha).format(),
-              flag: false
+              flag: flagLlegada
             },
             status: {
               text: "Disponible",
@@ -190,7 +207,8 @@ export default new Vuex.Store({
             grupo: register.grupo,
             createdAt: moment(new Date()).format(),
             lastSession: null, // Fecha de la ultima sesión para comparar si tiene o no una sesión hoy
-            lastSessionID: null // Para facilitar traer la información de una sesión ya iniciada hoy
+            lastSessionID: null, // Para facilitar traer la información de una sesión ya iniciada hoy
+            horario: ["480", "480", "1200", "480", "480", "480", "480"]
           })
           .then(
             () => {},
@@ -245,6 +263,7 @@ export default new Vuex.Store({
     userGrupo: state => state.user.grupo,
     userFullName: state => state.user.fullname,
     userEmail: state => state.user.email,
+    userHorario: state => state.user.horario,
     isLoggedIn: state => !!state.user.uid,
     isMaster: state => (state.user.level === "Master" ? true : false),
     isSupervisor: state => (state.user.level === "Supervisor" ? true : false),
