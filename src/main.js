@@ -12,7 +12,12 @@ import VueApexCharts from "vue-apexcharts";
 import moment from "moment";
 import VueCarousel from "vue-carousel";
 import Vuex from "vuex";
+import Vuesax from "vuesax";
 
+import "vuesax/dist/vuesax.css"; //Vuesax styles
+Vue.use(Vuesax, {
+  // options here
+});
 Vue.use(Vuex);
 Vue.use(VueCarousel);
 Vue.filter("formatDate", function(value) {

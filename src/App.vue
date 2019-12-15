@@ -15,7 +15,7 @@
 
       <v-spacer></v-spacer>
       <v-toolbar-title class="hidden-sm-and-down">
-        <span>{{$store.getters.userFullName}}</span>
+        <span>{{ $store.getters.userFullName }}</span>
       </v-toolbar-title>
       <v-menu left bottom v-if="$store.getters.isLoggedIn">
         <template v-slot:activator="{ on }">

@@ -70,6 +70,7 @@ const routes = [
       } else next({ name: "login" });
     }
   },
+  { path: "/", redirect: { name: "login" } },
   { path: "*", component: PageNotFound }
 ];
 

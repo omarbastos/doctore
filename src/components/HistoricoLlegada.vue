@@ -1,45 +1,13 @@
 <template>
   <div>
     <div id="chart">
-      <apexchart type="bar" height="350" :options="chartOptions" :series="series" />
+      <apexchart
+        type="bar"
+        height="350"
+        :options="chartOptions"
+        :series="serias"
+      />
     </div>
-
-    <v-card class="container">
-      <v-card-title class="text-center">Editar Horario de {{agent.agente}}</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col v-for="(item,index) in horarioSemanal" :key="index" cols="12" sm="6">
-            <v-menu
-              ref="horarioSemanal"
-              v-model="item.menu2"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              :return-value.sync="item.horaLlegada"
-              transition="scale-transition"
-              offset-y
-              max-width="290px"
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  v-model="item.horaLlegada"
-                  :label="item.dia"
-                  prepend-icon="mdi-calendar"
-                  readonly
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-time-picker
-                v-if="item.menu2"
-                v-model="item.horaLlegada"
-                full-width
-                @click:minute="updateHorario(item,index)"
-              ></v-time-picker>
-            </v-menu>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
 
     <v-btn fab @click="emitClose" absolute bottom right color="red">
       <v-icon color="white">mdi-close</v-icon>
@@ -48,6 +16,7 @@
 </template>
 
 <script>
+import { usersCollection, sessionsCollection } from "../firebase";
 export default {
   props: {
     agent: {
@@ -57,77 +26,116 @@ export default {
       })
     }
   },
-  data: () => ({
-    horarioSemanal: [
-      { dia: "Lunes", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Martes", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Miercoles", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Jueves", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Viernes", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Sabado", horaLlegada: "08:00", menu2: false, menu: "menu" },
-      { dia: "Domingo", horaLlegada: "08:00", menu2: false, menu: "menu" }
-    ],
-    //config
-    series: [
-      {
-        name: "UP",
-        data: [
-          ["02-10-2017 GMT", 1],
-          ["02-11-2017 GMT", 0],
-          ["02-12-2017 GMT", 0],
-          ["02-13-2017 GMT", 1],
-          ["02-14-2017 GMT", 0],
-          ["02-15-2017 GMT", 1],
-          ["02-16-2017 GMT", 0],
-          ["02-17-2017 GMT", 1],
-          ["02-18-2017 GMT", 0]
-        ]
-      },
-      {
-        name: "AI",
-        data: [
-          ["02-10-2017 GMT", 0],
-          ["02-11-2017 GMT", 0],
-          ["02-12-2017 GMT", 0],
-          ["02-13-2017 GMT", 0],
-          ["02-14-2017 GMT", 0],
-          ["02-15-2017 GMT", 1],
-          ["02-16-2017 GMT", 0],
-          ["02-17-2017 GMT", 0],
-          ["02-18-2017 GMT", 1]
-        ]
-      },
-      {
-        name: "CF",
-        data: [
-          ["02-10-2017 GMT", 2],
-          ["02-11-2017 GMT", 0],
-          ["02-12-2017 GMT", 0],
-          ["02-13-2017 GMT", 1],
-          ["02-14-2017 GMT", 0],
-          ["02-15-2017 GMT", 2],
-          ["02-16-2017 GMT", 0],
-          ["02-17-2017 GMT", 0],
-          ["02-18-2017 GMT", 1]
-        ]
-      },
-      {
-        name: "LLEGADA",
-        data: [
-          ["02-10-2017 GMT", 1],
-          ["02-11-2017 GMT", 0],
-          ["02-12-2017 GMT", 0],
-          ["02-13-2017 GMT", 1],
-          ["02-14-2017 GMT", 1],
-          ["02-15-2017 GMT", 1],
-          ["02-16-2017 GMT", 0],
-          ["02-17-2017 GMT", 0],
-          ["02-18-2017 GMT", 0]
-        ]
+  firestore() {
+    return {
+      historicoSessions: sessionsCollection.where(
+        "user",
+        "==",
+        this.agent.user
+      ),
+      user: usersCollection.doc(this.agent.user)
+    };
+  },
+  filters: {
+    minutesToHour(value) {
+      let num = value;
+      let hours = num / 60;
+      let rhours = Math.floor(hours);
+      let minutes = (hours - rhours) * 60;
+      let rminutes = Math.round(minutes);
+      if (rminutes < 10) {
+        rminutes = `0${rminutes}`;
       }
-    ],
+      if (rhours < 10) {
+        rhours = `0${rhours}`;
+      }
+      return `${rhours}:${rminutes}`;
+    }
+  },
+  computed: {
+    horarioSemanal() {
+      return [
+        {
+          dia: "Lunes",
+          horaLlegada: this.user.horario[1]
+        },
+        {
+          dia: "Martes",
+          horaLlegada: this.user.horario[2]
+        },
+        {
+          dia: "Miercoles",
+          horaLlegada: this.user.horario[3]
+        },
+        {
+          dia: "Jueves",
+          horaLlegada: this.user.horario[4]
+        },
+        {
+          dia: "Viernes",
+          horaLlegada: this.user.horario[5]
+        },
+        {
+          dia: "Sabado",
+          horaLlegada: this.user.horario[6]
+        },
+        {
+          dia: "Domingo",
+          horaLlegada: this.user.horario[0]
+        }
+      ];
+    },
+    serias() {
+      let objUP = {
+        name: "UP",
+        data: []
+      };
+      objUP.data = this.historicoSessions.map(({ UP, llegada }) => [
+        llegada.createdAt,
+        UP.flag * 1
+      ]);
+      let objLlegada = {
+        name: "llegada",
+        data: []
+      };
+      objLlegada.data = this.historicoSessions.map(({ llegada }) => [
+        llegada.createdAt,
+        llegada.flag * 1
+      ]);
+      let objAI = {
+        name: "AI",
+        data: []
+      };
+      objAI.data = this.historicoSessions.map(({ AI, llegada }) => [
+        llegada.createdAt,
+        AI.flag * 1
+      ]);
+      let objCF1 = {
+        name: "CF1",
+        data: []
+      };
+      objCF1.data = this.historicoSessions.map(({ CF1, llegada }) => [
+        llegada.createdAt,
+        CF1.flag * 1
+      ]);
+      let objCF2 = {
+        name: "CF2",
+        data: []
+      };
+      objCF2.data = this.historicoSessions.map(({ llegada, CF2 }) => [
+        llegada.createdAt,
+        CF2.flag * 1
+      ]);
+      let series = [objUP, objAI, objCF1, objCF2, objLlegada];
+      return series;
+    }
+  },
+  data: () => ({
+    user: {},
+    historicoSessions: [],
+
     chartOptions: {
-      colors: ["#E85F14", "#A538B6", "#4E5FBB", "#ff0000"],
+      colors: ["#E85F14", "#A538B6", "#4E5FBB", "#4E5FBB", "#ff0000"],
       plotOptions: {
         bar: {
           horizontal: false,
@@ -179,16 +187,10 @@ export default {
       }
     }
   }),
-  created() {},
+
   methods: {
     emitClose() {
       this.$emit("close-historico");
-    },
-    updateHorario(item, index) {
-      this.$refs.horarioSemanal[index].save(item.horaLlegada);
-      //params: {
-
-      // axios.put(url,params)
     }
   }
 };

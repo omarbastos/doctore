@@ -12,10 +12,17 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text">Umana Consultants</v-toolbar-title>
+            <v-toolbar-title class="black--text"
+              >Umana Consultants</v-toolbar-title
+            >
           </v-toolbar>
           <v-card v-if="errors && errors.length">
-            <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
+            <v-card-text
+              class="red--text"
+              v-for="(err, index) of errors"
+              :key="index"
+              >{{ err }}</v-card-text
+            >
           </v-card>
           <v-card-text>
             <v-form>
@@ -58,7 +65,8 @@ export default {
     sessions: [],
     login: {},
     errors: [],
-    uid: null
+    uid: null,
+    backgroundLoading: "#fd9917"
   }),
   firestore() {
     return {};
@@ -66,6 +74,10 @@ export default {
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
+      this.$vs.loading({
+        background: this.backgroundLoading,
+        color: "rgb(255, 255, 255)"
+      });
       this.login.email = this.login.email.toLowerCase();
       this.$store
         .dispatch("SIGN_IN", this.login)
@@ -80,6 +92,7 @@ export default {
                 if (!response.lastSession) {
                   // El usuario NUNCA ha iniciado sesión
                   this.$store.dispatch("CREAR_SESION").then(() => {
+                    this.$vs.loading.close();
                     this.$router.push({ name: "Agente" });
                   });
                 } else if (
@@ -95,15 +108,20 @@ export default {
                       console.log(
                         "La sesion es" + this.$store.getters.sesionId
                       );
+                      this.$vs.loading.close();
                       this.$router.push({ name: "Agente" });
                     });
                 } else {
                   // El usuario ha iniciado sesión antes pero no hoy
                   this.$store.dispatch("CREAR_SESION").then(() => {
+                    this.$vs.loading.close();
                     this.$router.push({ name: "Agente" });
                   });
                 }
               } else {
+                this.$vs.loading.close();
+                this.$vs.loading.close();
+
                 this.$router.push({ name: response.level });
               }
             },
@@ -113,6 +131,7 @@ export default {
           );
         })
         .catch(err => {
+          this.$vs.loading.close();
           this.errors = [err.message];
         });
     }

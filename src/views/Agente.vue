@@ -1,6 +1,11 @@
 <template>
   <div class="agente my-4">
-    <v-snackbar top :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
+    <v-snackbar
+      top
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      v-model="snackbar.status"
+    >
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
@@ -41,7 +46,11 @@
         </ul>-->
       </div>
       <div :class="classRs">
-        <rs-reloj :fbTotalTime="session.RS.totalTime" @rs-stop="stopRs" @rs-start="startRs"></rs-reloj>
+        <rs-reloj
+          :fbTotalTime="session.RS.totalTime"
+          @rs-stop="stopRs"
+          @rs-start="startRs"
+        ></rs-reloj>
       </div>
       <div :class="classCf1">
         <cf1-reloj

@@ -1,6 +1,10 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
+    <v-snackbar
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      v-model="snackbar.status"
+    >
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
@@ -16,10 +20,17 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
+            <v-toolbar-title class="black--text"
+              >Registrar un nuevo usuario</v-toolbar-title
+            >
           </v-toolbar>
           <v-card v-if="errors && errors.length">
-            <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
+            <v-card-text
+              class="red--text"
+              v-for="(err, index) of errors"
+              :key="index"
+              >{{ err }}</v-card-text
+            >
           </v-card>
           <v-card-text>
             <v-form>
@@ -127,7 +138,7 @@ export default {
       { state: "Master", abbr: "mdi-account-tie" },
       { state: "Agente", abbr: "mdi-account-circle" }
     ],
-    groups: ["La Nacion", "Cobros Tigo", "Claro"]
+    groups: ["Turrucares"]
   }),
   computed: {
     passwordConfirmationRule() {
@@ -140,13 +151,18 @@ export default {
   methods: {
     onSubmit(ev) {
       ev.preventDefault();
+      this.$vs.loading({
+        background: "#fd9917",
+        color: "rgb(255, 255, 255)"
+      });
       this.$store
         .dispatch("CREAR_USUARIO", this.register)
         .then(() => {
-          this.regiser = null;
-          this.$router.push({ name: "Master" });
+          this.$vs.loading.close();
+          this.$router.push({ name: "login" });
         })
         .catch(err => {
+          this.$vs.loading.close();
           this.errors = [err.message];
         });
     }
