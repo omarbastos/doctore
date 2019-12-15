@@ -97,7 +97,7 @@ export default new Vuex.Store({
             () => {
               commit("STORE_SESION", id);
 
-              console.log("Ahora si se guardo la session");
+              // console.log("Ahora si se guardo la session");
               resolve();
             },
             error => {
@@ -115,9 +115,9 @@ export default new Vuex.Store({
         let currentDateHours = moment(fecha).hours();
         let currentTime = currentDateHours * 60 + currentDateMinutes;
         let horarioDate = horario[moment(fecha).day()];
-        console.log(horarioDate);
+        // console.log(horarioDate);
         let flagLlegada = false;
-        console.log(currentTime > horarioDate);
+        // console.log(currentTime > horarioDate);
         if (currentTime > horarioDate) {
           flagLlegada = true;
         } else {
@@ -135,7 +135,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 10,
+              totalTime: 3600,
               disable: false
             },
             UP: {
@@ -143,7 +143,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 10,
+              totalTime: 1200,
               disable: false
             },
             CF1: {
@@ -151,7 +151,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 10,
+              totalTime: 900,
               disable: false
             },
             CF2: {
@@ -159,7 +159,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 10,
+              totalTime: 900,
               disable: false
             },
             RS: {
@@ -214,7 +214,7 @@ export default new Vuex.Store({
           .then(
             () => {},
             error => {
-              console.log(error);
+              // console.log(error);
               reject(error);
             }
           );
@@ -247,7 +247,7 @@ export default new Vuex.Store({
                 resolve(doc.data());
               } else {
                 // doc.data() will be undefined in this case
-                console.log("No such document!");
+                // console.log("No such document!");
               }
             },
             error => {

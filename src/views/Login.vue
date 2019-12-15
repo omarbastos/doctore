@@ -86,9 +86,9 @@ export default {
           this.$store.dispatch("TRAER_USUARIO", data.user.uid).then(
             response => {
               if (response.level === "Agente") {
-                console.log(
-                  response.lastSession + "y" + moment().format("MMM Do YY")
-                );
+                // console.log(
+                //   response.lastSession + "y" + moment().format("MMM Do YY")
+                // );
                 if (!response.lastSession) {
                   // El usuario NUNCA ha iniciado sesión
                   this.$store.dispatch("CREAR_SESION").then(() => {
@@ -105,9 +105,9 @@ export default {
                   this.$store
                     .dispatch("GUARDAR_SESION", response.lastSessionID)
                     .then(() => {
-                      console.log(
-                        "La sesion es" + this.$store.getters.sesionId
-                      );
+                      // console.log(
+                      //   "La sesion es" + this.$store.getters.sesionId
+                      // );
                       this.$vs.loading.close();
                       this.$router.push({ name: "Agente" });
                     });
@@ -124,10 +124,10 @@ export default {
 
                 this.$router.push({ name: response.level });
               }
-            },
-            error => {
-              console.error(error);
             }
+            // error => {
+            //   // console.error(ecrror);
+            // }
           );
         })
         .catch(err => {

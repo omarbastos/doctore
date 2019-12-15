@@ -50,14 +50,9 @@ export default {
   computed: {},
   methods: {
     logout() {
-      this.$store
-        .dispatch("SIGN_OUT")
-        .then(() => {
-          this.$router.push("/login");
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      this.$store.dispatch("SIGN_OUT").then(() => {
+        this.$router.push("/login");
+      });
     }
   }
 };
