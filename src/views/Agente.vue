@@ -151,59 +151,21 @@ export default {
 
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
   methods: {
-    flagUp(totalTime) {
-      this.$firestore.sessions
-        .doc(this.docKey)
-        .update({
-          "UP.flag": true,
-          "UP.flagAt": moment(new Date()).format(),
-          "UP.disable": true,
-          "UP.totalTime": totalTime,
-          tardias: increment
-        })
-        .then(() => this.pauseUp(totalTime));
-    },
-    flagAi(totalTime) {
-      //Guardar en la base de datos que se comio el UP
-      this.$firestore.sessions
-        .doc(this.docKey)
-        .update({
-          "AI.flag": true,
-          "AI.flagAt": moment(new Date()).format(),
-          "AI.totalTime": totalTime,
-          tardias: increment
-        })
-        .then(() => {
-          this.aiText = "TARDIA POR ALMUERZO";
-        });
-    },
 
-    flagCf2(totaltime) {
-      this.$firestore.sessions
-        .doc(this.docKey)
-        .update({
-          "CF2.flag": true,
-          "CF2.flagAt": moment(new Date()).format(),
-          "CF2.totaltime": totaltime,
-          tardias: increment
-        })
-        .then(() => {
-          this.cf2Text = "TARDIA POR CAFE2";
-        });
-    },
+    // ------------------------------------------------------------- UP
+    startUp(totalTime) {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "status.text": "Uso Personal",
+        "status.valor": 2,
+        "UP.totalTime": totalTime
+      });
 
-    flagCf1(totalTime) {
-      this.$firestore.sessions
-        .doc(this.docKey)
-        .update({
-          "CF1.flag": true,
-          "CF1.flagAt": moment(new Date()).format(),
-          "CF1.totalTime": totalTime,
-          tardias: increment
-        })
-        .then(() => {
-          this.cf1Text = "TARDIA POR CAFE1";
-        });
+      this.classUp = "col-md-12 d-flex align-center justify-center";
+      this.classCf1 = "hidden";
+      this.classCf2 = "hidden";
+      this.classRs = "hidden";
+      this.classAi = "hidden";
+      this.classHora = "hidden";
     },
     pauseUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
@@ -220,18 +182,33 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startUp(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "status.text": "Uso Personal",
-        "status.valor": 2,
-        "UP.totalTime": totalTime
-      });
+    flagUp(totalTime) {
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "UP.flag": true,
+          "UP.flagAt": moment(new Date()).format(),
+          "UP.disable": true,
+          "UP.totalTime": totalTime,
+          tardias: increment
+        })
+        .then(() => this.pauseUp(totalTime));
+    },
 
-      this.classUp = "col-md-12 d-flex align-center justify-center";
+    // ----------------------------------------------------Ai
+    startAi(totalTime) {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "AI.startedAt": moment(new Date()).format(),
+        "status.text": "En Almuerzo",
+        "status.valor": 4,
+
+        "AI.totalTime": totalTime
+      });
+      this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
       this.classRs = "hidden";
-      this.classAi = "hidden";
+      this.classAi = "col-md-12 d-flex align-center justify-center";
       this.classHora = "hidden";
     },
     stopAi(totalTime) {
@@ -249,44 +226,34 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startAi(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "AI.startedAt": moment(new Date()).format(),
-        "status.text": "En Almuerzo",
-        "status.valor": 4,
+    flagAi(totalTime) {
+      //Guardar en la base de datos que se comio el UP
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "AI.flag": true,
+          "AI.flagAt": moment(new Date()).format(),
+          "AI.totalTime": totalTime,
+          tardias: increment
+        })
+        .then(() => {
+          this.aiText = "TARDIA POR ALMUERZO";
+        });
+    },
 
-        "AI.totalTime": totalTime
+    // -----------------------------------------------CF1
+    startCafe1(totalTime) {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "CF1.startedAt": moment(new Date()).format(),
+        "status.text": "En Café",
+        "status.valor": 1,
+
+        "CF1.totalTime": totalTime
       });
       this.classUp = "hidden";
-      this.classCf1 = "hidden";
+      this.classCf1 = "col-md-12 d-flex align-center justify-center";
       this.classCf2 = "hidden";
       this.classRs = "hidden";
-      this.classAi = "col-md-12 d-flex align-center justify-center";
-      this.classHora = "hidden";
-    },
-    stopRs(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "status.text": "Disponible",
-
-        "status.valor": 0,
-        "RS.totalTime": totalTime
-      });
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
-    },
-    startRs() {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "status.text": "Reunion con Supervisor",
-        "status.valor": 3
-      });
-      this.classUp = "hidden";
-      this.classCf1 = "hidden";
-      this.classCf2 = "hidden";
-      this.classRs = "col-md-12 d-flex align-center justify-center";
       this.classAi = "hidden";
       this.classHora = "hidden";
     },
@@ -305,17 +272,32 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startCafe1(totalTime) {
+    flagCf1(totalTime) {
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "CF1.flag": true,
+          "CF1.flagAt": moment(new Date()).format(),
+          "CF1.totalTime": totalTime,
+          tardias: increment
+        })
+        .then(() => {
+          this.cf1Text = "TARDIA POR CAFE1";
+        });
+    },
+
+    // ------------------------------------------------------------- CF2
+    startCafe2(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "CF1.startedAt": moment(new Date()).format(),
+        "CF2.startedAt": moment(new Date()).format(),
         "status.text": "En Café",
         "status.valor": 1,
 
-        "CF1.totalTime": totalTime
+        "CF2.totalTime": totalTime
       });
       this.classUp = "hidden";
-      this.classCf1 = "col-md-12 d-flex align-center justify-center";
-      this.classCf2 = "hidden";
+      this.classCf1 = "hidden";
+      this.classCf2 = "col-md-12 d-flex align-center justify-center";
       this.classRs = "hidden";
       this.classAi = "hidden";
       this.classHora = "hidden";
@@ -335,20 +317,46 @@ export default {
       this.classAi = "col-md-4 d-flex align-center justify-center";
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
-    startCafe2(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "CF2.startedAt": moment(new Date()).format(),
-        "status.text": "En Café",
-        "status.valor": 1,
+    flagCf2(totaltime) {
+      this.$firestore.sessions
+        .doc(this.docKey)
+        .update({
+          "CF2.flag": true,
+          "CF2.flagAt": moment(new Date()).format(),
+          "CF2.totaltime": totaltime,
+          tardias: increment
+        })
+        .then(() => {
+          this.cf2Text = "TARDIA POR CAFE2";
+        });
+    },  
 
-        "CF2.totalTime": totalTime
+    // ------------------------------------------------------------RS
+    startRs() {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "status.text": "Reunion con Supervisor",
+        "status.valor": 3
       });
       this.classUp = "hidden";
       this.classCf1 = "hidden";
-      this.classCf2 = "col-md-12 d-flex align-center justify-center";
-      this.classRs = "hidden";
+      this.classCf2 = "hidden";
+      this.classRs = "col-md-12 d-flex align-center justify-center";
       this.classAi = "hidden";
       this.classHora = "hidden";
+    },
+    stopRs(totalTime) {
+      this.$firestore.sessions.doc(this.docKey).update({
+        "status.text": "Disponible",
+
+        "status.valor": 0,
+        "RS.totalTime": totalTime
+      });
+      this.classUp = "col-md-4 d-flex align-center justify-center";
+      this.classCf1 = "col-md-4 d-flex align-center justify-center";
+      this.classCf2 = "col-md-4 d-flex align-center justify-center";
+      this.classRs = "col-md-4 d-flex align-center justify-center";
+      this.classAi = "col-md-4 d-flex align-center justify-center";
+      this.classHora = "col-md-4 d-flex align-center justify-center";
     }
   }
 };
