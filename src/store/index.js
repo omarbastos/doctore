@@ -152,6 +152,7 @@ export default new Vuex.Store({
               flagAt: null,
               finishedAt: null,
               totalTime: 900,
+              originalTime: 900,
               disable: false
             },
             CF2: {
@@ -160,6 +161,7 @@ export default new Vuex.Store({
               flagAt: null,
               finishedAt: null,
               totalTime: 900,
+              originalTime: 900,
               disable: false
             },
             RS: {

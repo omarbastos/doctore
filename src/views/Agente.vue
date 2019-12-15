@@ -104,6 +104,7 @@ import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
 import { sessionsCollection, increment } from "../firebase";
+import timeHelpers from '../lib/timeHelpers'
 export default {
   props: {
     fbTotalTime: Number
@@ -150,16 +151,57 @@ export default {
   },
 
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
+
+  created: function () {
+    console.log('Agente en: '+ this.session.status.text)
+
+    switch(this.session.status.valor) {
+      case 1:
+        console.log('Agente está en UP')
+        this.runUp()
+        break;
+      case 2:
+        console.log('Agente está en Almuerzo')
+        this.runAi()
+        break;
+      case 3:
+        console.log('Agente está en Café 1')
+        if (timeHelpers.revisarLimite(this.session.CF1.starteAt, this.session.CF1.originalTime)) {
+          this.flagCf1(0)
+        } else {
+          this.session.CF1.totalTime = timeHelpers.haceSegundos(this.session.CF1.startedAt)
+        }
+        this.runCF1()
+        break;
+      case 4:
+        console.log('Agente está en Café 2')
+        if (timeHelpers.revisarLimite(this.session.CF2.starteAt, this.session.CF2.originalTime)) {
+          this.flagCf2(0)
+        } else {
+          this.session.CF2.totalTime = timeHelpers.haceSegundos(this.session.CF2.startedAt)
+        }
+        this.runCF2()
+        break;
+      case 5:
+        console.log('Agente está en RS')
+        this.runRS()
+        break;
+    }
+    
+
+  },
   methods: {
 
     // ------------------------------------------------------------- UP
     startUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
         "status.text": "Uso Personal",
-        "status.valor": 2,
+        "status.valor": 1,
         "UP.totalTime": totalTime
       });
-
+      this.runUp()
+    },
+    runUp() {
       this.classUp = "col-md-12 d-flex align-center justify-center";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -200,10 +242,13 @@ export default {
       this.$firestore.sessions.doc(this.docKey).update({
         "AI.startedAt": moment(new Date()).format(),
         "status.text": "En Almuerzo",
-        "status.valor": 4,
+        "status.valor": 2,
 
         "AI.totalTime": totalTime
       });
+      this.runAi()
+    },
+    runAi() {
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -246,10 +291,13 @@ export default {
       this.$firestore.sessions.doc(this.docKey).update({
         "CF1.startedAt": moment(new Date()).format(),
         "status.text": "En Café",
-        "status.valor": 1,
+        "status.valor": 3,
 
         "CF1.totalTime": totalTime
       });
+      this.runCF1()
+    },
+    runCF1() {
       this.classUp = "hidden";
       this.classCf1 = "col-md-12 d-flex align-center justify-center";
       this.classCf2 = "hidden";
@@ -291,10 +339,13 @@ export default {
       this.$firestore.sessions.doc(this.docKey).update({
         "CF2.startedAt": moment(new Date()).format(),
         "status.text": "En Café",
-        "status.valor": 1,
+        "status.valor": 4,
 
         "CF2.totalTime": totalTime
       });
+      this.runCF2()
+    },
+    runCF2() {
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "col-md-12 d-flex align-center justify-center";
@@ -335,8 +386,11 @@ export default {
     startRs() {
       this.$firestore.sessions.doc(this.docKey).update({
         "status.text": "Reunion con Supervisor",
-        "status.valor": 3
+        "status.valor": 5
       });
+      this.runRS()
+    },
+    runRS() {
       this.classUp = "hidden";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
