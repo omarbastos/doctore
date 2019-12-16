@@ -158,10 +158,20 @@ export default {
     switch(this.session.status.valor) {
       case 1:
         console.log('Agente está en UP')
+        if (timeHelpers.revisarLimite(this.session.UP.starteAt, this.session.UP.originalTime)) {
+          this.flagUp(0)
+        } else {
+          this.session.UP.totalTime = timeHelpers.haceSegundos(this.session.UP.startedAt)
+        }
         this.runUp()
         break;
       case 2:
         console.log('Agente está en Almuerzo')
+        if (timeHelpers.revisarLimite(this.session.AI.starteAt, this.session.AI.originalTime)) {
+          this.flagCf1(0)
+        } else {
+          this.session.AI.totalTime = timeHelpers.haceSegundos(this.session.AI.startedAt)
+        }
         this.runAi()
         break;
       case 3:

@@ -136,6 +136,7 @@ export default new Vuex.Store({
               flagAt: null,
               finishedAt: null,
               totalTime: 3600,
+              originalTime: 3600,
               disable: false
             },
             UP: {
@@ -144,6 +145,7 @@ export default new Vuex.Store({
               flagAt: null,
               finishedAt: null,
               totalTime: 1200,
+              originalTime: 1200,
               disable: false
             },
             CF1: {
