@@ -112,6 +112,7 @@ export default {
   name: "home",
 
   data: () => ({
+    upd: 0,
     sessions: [],
     session: {},
     snackbar: {
@@ -151,67 +152,123 @@ export default {
   },
 
   components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
+/*
+  beforeUpdate: function () {
+    if (this.upd === 0) {
+      this.upd++
+      console.log('Se ha actualizado '+this.upd+' veces.')
 
-  created: function () {
-    console.log('Agente en: '+ this.session.status.text)
-
-    switch(this.session.status.valor) {
-      case 1:
-        console.log('Agente está en UP')
-        if (timeHelpers.revisarLimite(this.session.UP.starteAt, this.session.UP.originalTime)) {
-          this.flagUp(0)
-        } else {
-          this.session.UP.totalTime = timeHelpers.haceSegundos(this.session.UP.startedAt)
-        }
-        this.runUp()
-        break;
-      case 2:
-        console.log('Agente está en Almuerzo')
-        if (timeHelpers.revisarLimite(this.session.AI.starteAt, this.session.AI.originalTime)) {
-          this.flagCf1(0)
-        } else {
-          this.session.AI.totalTime = timeHelpers.haceSegundos(this.session.AI.startedAt)
-        }
-        this.runAi()
-        break;
-      case 3:
-        console.log('Agente está en Café 1')
-        if (timeHelpers.revisarLimite(this.session.CF1.starteAt, this.session.CF1.originalTime)) {
-          this.flagCf1(0)
-        } else {
-          this.session.CF1.totalTime = timeHelpers.haceSegundos(this.session.CF1.startedAt)
-        }
-        this.runCF1()
-        break;
-      case 4:
-        console.log('Agente está en Café 2')
-        if (timeHelpers.revisarLimite(this.session.CF2.starteAt, this.session.CF2.originalTime)) {
-          this.flagCf2(0)
-        } else {
-          this.session.CF2.totalTime = timeHelpers.haceSegundos(this.session.CF2.startedAt)
-        }
-        this.runCF2()
-        break;
-      case 5:
-        console.log('Agente está en RS')
-        this.runRS()
-        break;
+      this.revisarEstado()
     }
-    
-
+ 
+  },*/
+  updated: function () {
+    this.revisarEstado()
   },
   methods: {
+    revisarEstado() {
+      let tTime = 0
+      
+      switch(this.session.status.valor) {
+        case 0:
+          this.volver()
+          break;
+        case 1:
+          console.log('Agente está en UP')
+          if (timeHelpers.revisarLimite(this.session.UP.starteAt, this.session.UP.originalTime)) {
+            this.flagUp(0)
+          } else {
+            tTime = this.session.UP.originalTime - timeHelpers.haceSegundos(this.session.UP.startedAt)
+
+            console.log('UP:', tTime)
+
+            this.session.UP.totalTime = tTime  
+
+            this.$firestore.sessions.doc(this.docKey).update({
+              "UP.totalTime": tTime,
+            });
+          }
+          this.runUp()
+          break;
+        case 2:
+          console.log('Agente está en Almuerzo')
+          if (timeHelpers.revisarLimite(this.session.AI.starteAt, this.session.AI.originalTime)) {
+            this.flagCf1(0)
+          } else {
+            tTime = this.session.AI.originalTime - timeHelpers.haceSegundos(this.session.AI.startedAt)
+
+            console.log('AI:', tTime)
+
+            this.session.AI.totalTime = tTime
+
+            this.$firestore.sessions.doc(this.docKey).update({
+              "AI.totalTime": tTime,
+            });
+          }
+          this.runAi()
+          break;
+        case 3:
+          console.log('Agente está en Café 1')
+          if (timeHelpers.revisarLimite(this.session.CF1.starteAt, this.session.CF1.originalTime)) {
+            this.flagCf1(0)
+          } else {
+            tTime =  this.session.CF1.originalTime - timeHelpers.haceSegundos(this.session.CF1.startedAt)
+
+            console.log('CF1:', tTime)
+
+            this.session.CF1.totalTime = tTime
+
+            this.$firestore.sessions.doc(this.docKey).update({
+              "CF1.totalTime": tTime,
+            });
+          }
+          this.startCafe1(tTime)
+          break;
+        case 4:
+          console.log('Agente está en Café 2')
+          if (timeHelpers.revisarLimite(this.session.CF2.starteAt, this.session.CF2.originalTime)) {
+            this.flagCf2(0)
+          } else {
+            tTime =  this.session.CF2.originalTime - timeHelpers.haceSegundos(this.session.CF2.startedAt)
+
+            console.log('CF2:', tTime)
+
+            this.session.CF2.totalTime = tTime
+
+            this.$firestore.sessions.doc(this.docKey).update({
+              "CF2.totalTime": tTime,
+            });
+          }
+          this.startCafe2(tTime)
+          break;
+        case 5:
+          console.log('Agente está en RS')
+          this.runRS()
+          break;
+      }
+    },
+    volver() {
+      this.classUp = "col-md-4 d-flex align-center justify-center";
+      this.classCf1 = "col-md-4 d-flex align-center justify-center";
+      this.classCf2 = "col-md-4 d-flex align-center justify-center";
+      this.classRs = "col-md-4 d-flex align-center justify-center";
+      this.classAi = "col-md-4 d-flex align-center justify-center";
+      this.classHora = "col-md-4 d-flex align-center justify-center";
+    },
 
     // ------------------------------------------------------------- UP
     startUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
-        "status.text": "Uso Personal",
-        "status.valor": 1,
-        "UP.totalTime": totalTime
+        "UP.startedAt": moment(new Date()).format(),
+        "UP.totalTime": totalTime,
+        "status.text": "En uso personal",
+        "status.valor": 1
       });
+
       this.runUp()
     },
     runUp() {
+      console.log('Corre el up')
       this.classUp = "col-md-12 d-flex align-center justify-center";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
@@ -227,12 +284,7 @@ export default {
         "status.valor": 0
       });
 
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
+      this.volver()
     },
     flagUp(totalTime) {
       this.$firestore.sessions
@@ -249,13 +301,21 @@ export default {
 
     // ----------------------------------------------------Ai
     startAi(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "AI.startedAt": moment(new Date()).format(),
-        "status.text": "En Almuerzo",
-        "status.valor": 2,
+      if(this.session.AI.startedAt) {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "status.text": "En Almuerzo",
+          "status.valor": 2,
+          "AI.totalTime": totalTime
+        });
+      } else {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "AI.startedAt": moment(new Date()).format(),
+          "status.text": "En Almuerzo",
+          "status.valor": 2,
 
-        "AI.totalTime": totalTime
-      });
+          "AI.totalTime": totalTime
+        });
+      }
       this.runAi()
     },
     runAi() {
@@ -274,12 +334,7 @@ export default {
         "AI.totalTime": totalTime,
         "AI.disable": true
       });
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
+      this.volver()
     },
     flagAi(totalTime) {
       //Guardar en la base de datos que se comio el UP
@@ -298,13 +353,19 @@ export default {
 
     // -----------------------------------------------CF1
     startCafe1(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "CF1.startedAt": moment(new Date()).format(),
-        "status.text": "En Café",
-        "status.valor": 3,
+      if(this.session.CF1.startedAt) {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "CF1.totalTime": totalTime
+        });
+      } else {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "CF1.startedAt": moment(new Date()).format(),
+          "status.text": "En Café",
+          "status.valor": 3,
 
-        "CF1.totalTime": totalTime
-      });
+          "CF1.totalTime": totalTime
+        });
+      }
       this.runCF1()
     },
     runCF1() {
@@ -323,12 +384,7 @@ export default {
         "CF1.totalTime": totalTime,
         "CF1.disable": true
       });
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
+      this.volver()
     },
     flagCf1(totalTime) {
       this.$firestore.sessions
@@ -346,13 +402,22 @@ export default {
 
     // ------------------------------------------------------------- CF2
     startCafe2(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "CF2.startedAt": moment(new Date()).format(),
-        "status.text": "En Café",
-        "status.valor": 4,
+      if(this.session.CF2.startedAt) {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "status.text": "En Café",
+          "status.valor": 4,
 
-        "CF2.totalTime": totalTime
-      });
+          "CF2.totalTime": totalTime
+        });
+      } else {
+        this.$firestore.sessions.doc(this.docKey).update({
+          "CF2.startedAt": moment(new Date()).format(),
+          "status.text": "En Café",
+          "status.valor": 4,
+
+          "CF2.totalTime": totalTime
+        });
+      }
       this.runCF2()
     },
     runCF2() {
@@ -371,12 +436,7 @@ export default {
         "CF2.totalTime": totalTime,
         "CF2.disable": true
       });
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
+      this.volver()
     },
     flagCf2(totaltime) {
       this.$firestore.sessions
@@ -415,12 +475,7 @@ export default {
         "status.valor": 0,
         "RS.totalTime": totalTime
       });
-      this.classUp = "col-md-4 d-flex align-center justify-center";
-      this.classCf1 = "col-md-4 d-flex align-center justify-center";
-      this.classCf2 = "col-md-4 d-flex align-center justify-center";
-      this.classRs = "col-md-4 d-flex align-center justify-center";
-      this.classAi = "col-md-4 d-flex align-center justify-center";
-      this.classHora = "col-md-4 d-flex align-center justify-center";
+      this.volver()
     }
   }
 };
