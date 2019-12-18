@@ -9,11 +9,11 @@
     <div id="buttons">
       <!--     Start TImer -->
       <v-btn
-        dark
-        :disabled="disable"
+        :disabled="disableUP"
         id="start"
         x-large
         color="orange darken-4"
+        dark
         v-if="!timer"
         @click="startTimer"
       >
@@ -23,14 +23,13 @@
       <v-btn
         dark
         id="stop"
-        :disabled="disable"
+        :disabled="disableUP"
         x-large
         color="red"
         v-if="timer"
         @click="pauseTimer"
       >
-        <v-icon>mdi-paper-roll</v-icon>
-        {{ upText }}
+        <v-icon>mdi-paper-roll</v-icon>DETENER USO PERSONAL
       </v-btn>
     </div>
   </div>
@@ -39,60 +38,59 @@
 <script>
 export default {
   props: {
-    upText: {
-      type: String,
-      default: "PAUSAR USO PERSONAL"
-    },
-    disable: Boolean,
-    fbTotalTime: Number
+    fbTotalTime: Number,
+    flag: Boolean
   },
+  // ========================
+  data: () => ({
+    clock: false,
+    disableUP: false,
+    timer: null,
+    totalTime: 0,
+    resetButton: false,
+    title: "Let the countdown begin!!"
+  }),
   created: function() {
     // `this` hace referencia a la instancia vm
     this.totalTime = this.fbTotalTime;
   },
   // ========================
-  data: () => ({
-    totalTime: 5,
-    clock: false,
-    timer: null,
-    resetButton: false,
-    title: "Let the countdown begin!!"
-  }),
-  // ========================
   methods: {
     startTimer: function() {
-      this.clock = true;
       this.timer = setInterval(() => this.countdown(), 1000);
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
-      this.$emit("up-start", this.totalTime);
+      this.clock = true;
+      this.$emit("up-start");
     },
     pauseTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
-      this.$emit("up-pause", this.totalTime);
+      this.$emit("up-stop", this.totalTime);
     },
     stopTimer: function() {
       clearInterval(this.timer);
       this.timer = null;
       this.resetButton = true;
       this.title = "Never quit, keep going!!";
+      this.disableUP = true;
     },
-
+    resetTimer: function() {
+      this.totalTime = 25 * 60;
+      clearInterval(this.timer);
+      this.timer = null;
+      this.resetButton = false;
+      this.title = "Let the countdown begin!!";
+    },
     padTime: function(time) {
       return (time < 10 ? "0" : "") + time;
     },
     countdown: function() {
-      if (this.totalTime >= 1) {
-        this.totalTime--;
-      } else {
-        this.totalTime = 0;
-        clearInterval(this.timer);
+      this.totalTime++;
+      if (this.totalTime > 20 && this.flag == false) {
         this.$emit("up-ended", this.totalTime);
-
-        return;
       }
     }
   },

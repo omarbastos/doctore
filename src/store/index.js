@@ -1,6 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { db, usersCollection, auth, sessionsCollection } from "../firebase";
+import {
+  increment,
+  db,
+  usersCollection,
+  auth,
+  sessionsCollection
+} from "../firebase";
 import moment from "moment";
 
 Vue.use(Vuex);
@@ -15,7 +21,7 @@ export default new Vuex.Store({
       createdAt: localStorage.getItem("userCreatedAt") || "",
       uid: localStorage.getItem("uid") || "",
       email: localStorage.getItem("userEmail") || "",
-      horario: localStorage.getItem("userHorario") || []
+      horario: JSON.parse(localStorage.getItem("userHorario")) || []
     }
   },
   mutations: {
@@ -37,7 +43,7 @@ export default new Vuex.Store({
       localStorage.setItem("uid", user.uid);
       localStorage.setItem("userFullName", user.fullname);
       localStorage.setItem("userCreatedAt", user.createdAt);
-      localStorage.setItem("userHorario", user.horario);
+      localStorage.setItem("userHorario", JSON.stringify(user.horario));
     },
     LOGOUT(state) {
       state.sesionId = "";
@@ -114,7 +120,37 @@ export default new Vuex.Store({
 
         let currentDateHours = moment(fecha).hours();
         let currentTime = currentDateHours * 60 + currentDateMinutes;
-        let horarioDate = horario[moment(fecha).day()];
+        let dia = moment(fecha).format("dddd");
+        let horarioDate;
+        switch (dia) {
+          case "Monday":
+            horarioDate = horario.monday;
+            break;
+          case "Tuesday":
+            horarioDate = horario.tuesday;
+            break;
+          case "Wednesday":
+            horarioDate = horario.wednesday;
+            break;
+          case "Thursday":
+            horarioDate = horario.thursday;
+            break;
+          case "Friday":
+            horarioDate = horario.friday;
+            break;
+          case "Saturday":
+            horarioDate = horario.saturday;
+
+            break;
+          case "Sunday":
+            horarioDate = horario.sunday;
+
+            break;
+          default:
+            horarioDate = 480;
+            break;
+        }
+
         // console.log(horarioDate);
         let flagLlegada = false;
         // console.log(currentTime > horarioDate);
@@ -143,8 +179,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 1200,
-              disable: false
+              totalTime: 0
             },
             CF1: {
               flag: false,
@@ -162,6 +197,7 @@ export default new Vuex.Store({
               totalTime: 900,
               disable: false
             },
+
             RS: {
               totalTime: null
             },
@@ -182,7 +218,8 @@ export default new Vuex.Store({
                   .doc(getters.uid)
                   .update({
                     lastSession: moment(fecha).format("MMM Do YY"),
-                    lastSessionID: docRef.id
+                    lastSessionID: docRef.id,
+                    asistencias: increment
                   })
                   .then(() => {
                     resolve();
@@ -206,10 +243,20 @@ export default new Vuex.Store({
             fullname: register.fullname,
             level: register.level.state,
             grupo: register.grupo,
+            pausas: 0,
+            asistencias: 0,
             createdAt: moment(new Date()).format(),
             lastSession: null, // Fecha de la ultima sesión para comparar si tiene o no una sesión hoy
             lastSessionID: null, // Para facilitar traer la información de una sesión ya iniciada hoy
-            horario: ["480", "480", "1200", "480", "480", "480", "480"]
+            horario: {
+              monday: 480,
+              tuesday: 480,
+              wednesday: 480,
+              thursday: 480,
+              friday: 480,
+              saturday: 480,
+              sunday: 480
+            }
           })
           .then(
             () => {},

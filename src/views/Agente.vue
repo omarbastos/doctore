@@ -13,37 +13,21 @@
       <div :class="classUp">
         <up-reloj
           :fbTotalTime="session.UP.totalTime"
-          :disable="session.UP.disable || session.UP.flag"
-          :upText="upText"
-          @up-pause="pauseUp"
+          @up-stop="pauseUp"
           @up-start="startUp"
           @up-ended="flagUp"
+          :flag="session.UP.flag"
         ></up-reloj>
       </div>
-      <div :class="classHora">
-        <!-- <div class="display-1 white--text text-center">
-          <span class="llegada">HORA DE LLEGADA</span>
-          <div class="timer">
-            <span id="minutes">{{ hours }}</span>
-            <span id="middle">:</span>
-            <span id="seconds">{{ minutes }}</span> AM
-          </div>
-        </div>-->
-
-        <!-- <div>
-          <input type="text" v-model="newReptile" @keyup.enter="addReptile" />
-          <button @click="addReptile">
-            Add Reptile
-          </button>
-        </div>
-        <ul class="reptileList">
-          <li :key="index" v-for="(reptile, index) in reptiles">
-            {{ reptile.name }} -
-            <button @click="deleteReptile(reptile)">
-              Remove
-            </button>
-          </li>
-        </ul>-->
+     <div :class="classAi">
+        <ai-reloj
+          :fbTotalTime="session.AI.totalTime"
+          :disable="session.AI.disable"
+          :aiText="aiText"
+          @ai-start="startAi"
+          @ai-stop="stopAi"
+          @ai-ended="flagAi"
+        ></ai-reloj>
       </div>
       <div :class="classRs">
         <rs-reloj
@@ -62,17 +46,43 @@
           @cf1-ended="flagCf1"
         ></cf1-reloj>
       </div>
-
-      <div :class="classAi">
-        <ai-reloj
-          :fbTotalTime="session.AI.totalTime"
-          :disable="session.AI.disable"
-          :aiText="aiText"
-          @ai-start="startAi"
-          @ai-stop="stopAi"
-          @ai-ended="flagAi"
-        ></ai-reloj>
+ <div :class="classHora">
+        <div class="container chat">
+          <h2 class="text-primary text-center">
+            Team {{ $store.getters.userGrupo }}
+          </h2>
+          <v-divider></v-divider>
+          <div class="card">
+            <div class="card-body">
+              <p class="text-secondary nomessages" v-if="messages.length == 0">
+                [No messages yet!]
+              </p>
+              <div
+                class="messages"
+                v-chat-scroll="{ always: false, smooth: true }"
+              >
+                <div v-for="message in messages" :key="message.id">
+                  <v-chip class="ma-2" color="#fd9917">{{
+                    message.name
+                  }}</v-chip
+                  ><br />
+                  <span>{{ message.message }}</span>
+                  <br />
+                  <v-chip class="float-right  peque " outlined>{{
+                    message.timestamp
+                  }}</v-chip>
+                  <br />
+                </div>
+              </div>
+            </div>
+            <v-divider></v-divider>
+            <div class="card-action">
+              <CreateMessage :name="$store.getters.userFullName" />
+            </div>
+          </div>
+        </div>
       </div>
+      
       <div :class="classCf2">
         <cf2-reloj
           :fbTotalTime="session.CF2.totalTime"
@@ -84,14 +94,14 @@
         ></cf2-reloj>
       </div>
     </div>
-    <v-footer class="footer" dark>
+    <!-- <v-footer class="footer" dark>
       <marquee-text :repeat="4">
         <div class="mx-4 font-italic">
           <span class="boss mx-2 font-weight-bold">{{ groupLeader }}</span>
           "{{ difusion }}".
         </div>
       </marquee-text>
-    </v-footer>
+    </v-footer> -->
   </div>
 </template>
 
@@ -103,7 +113,8 @@ import Cf1Reloj from "../components/Cf1Reloj.vue";
 import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
-import { sessionsCollection, increment } from "../firebase";
+import CreateMessage from "@/components/CreateMessage";
+import { db, sessionsCollection, increment } from "../firebase";
 export default {
   props: {
     fbTotalTime: Number
@@ -111,6 +122,7 @@ export default {
   name: "home",
 
   data: () => ({
+    messages: [],
     sessions: [],
     session: {},
     snackbar: {
@@ -148,8 +160,24 @@ export default {
       return this.$store.getters.sesionId;
     }
   },
+  created() {
+    let ref = db.collection("messages").orderBy("timestamp");
+    ref.onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type == "added") {
+          let doc = change.doc;
+          this.messages.push({
+            id: doc.id,
+            name: doc.data().name,
+            message: doc.data().message,
+            timestamp: moment(doc.data().timestamp).format("LTS")
+          });
+        }
+      });
+    });
+  },
 
-  components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj },
+  components: { UpReloj, AiReloj, Cf1Reloj, Cf2Reloj, RsReloj, CreateMessage },
   methods: {
     flagUp(totalTime) {
       this.$firestore.sessions
@@ -387,7 +415,9 @@ export default {
   overflow-y: scroll;
   border-radius: 5px;
 }
-
+.peque{
+  font-size: 8px !important
+}
 .outer {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   border-radius: 8px;
@@ -417,5 +447,24 @@ span.boss {
 }
 
 h2 {
+}
+.chat h2{
+    font-size: 2.6em;
+    margin-bottom: 0px;
+}
+.chat h5{
+    margin-top: 0px;
+    margin-bottom: 40px;
+}
+.chat span{
+    font-size: 1.2em;
+}
+.chat .time{
+    display: block;
+    font-size: 0.7em;
+}
+.messages{
+    max-height: 300px;
+    overflow: auto;
 }
 </style>

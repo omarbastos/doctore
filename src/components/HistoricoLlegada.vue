@@ -1,5 +1,35 @@
 <template>
   <div>
+    <v-row justify="center">
+      <v-col>
+        <tabla-horario @fbDia="updateDay" :user="user"></tabla-horario>
+      </v-col>
+      <v-col>
+        <v-simple-table class="my-4">
+          <template v-slot:default>
+            <thead class="naranja">
+              <tr>
+                <th class="text-center subtitle-1">Agente</th>
+                <th class="text-center subtitle-1">Asistencias</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-center font-weight-bold">
+                  {{ user.fullname }}
+                </td>
+                <td class="text-center font-weight-bold">
+                  {{ user.asistencias }}
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-col>
+    </v-row>
+
+    <v-divider></v-divider>
+
     <div id="chart">
       <apexchart
         type="bar"
@@ -8,6 +38,7 @@
         :series="serias"
       />
     </div>
+    <v-divider></v-divider>
 
     <v-btn fab @click="emitClose" absolute bottom right color="red">
       <v-icon color="white">mdi-close</v-icon>
@@ -16,8 +47,12 @@
 </template>
 
 <script>
+import TablaHorario from "./TablaHorario";
 import { usersCollection, sessionsCollection } from "../firebase";
 export default {
+  components: {
+    TablaHorario
+  },
   props: {
     agent: {
       type: Object,
@@ -36,55 +71,40 @@ export default {
       user: usersCollection.doc(this.agent.user)
     };
   },
-  filters: {
-    minutesToHour(value) {
-      let num = value;
-      let hours = num / 60;
-      let rhours = Math.floor(hours);
-      let minutes = (hours - rhours) * 60;
-      let rminutes = Math.round(minutes);
-      if (rminutes < 10) {
-        rminutes = `0${rminutes}`;
-      }
-      if (rhours < 10) {
-        rhours = `0${rhours}`;
-      }
-      return `${rhours}:${rminutes}`;
-    }
-  },
+
   computed: {
-    horarioSemanal() {
-      return [
-        {
-          dia: "Lunes",
-          horaLlegada: this.user.horario[1]
-        },
-        {
-          dia: "Martes",
-          horaLlegada: this.user.horario[2]
-        },
-        {
-          dia: "Miercoles",
-          horaLlegada: this.user.horario[3]
-        },
-        {
-          dia: "Jueves",
-          horaLlegada: this.user.horario[4]
-        },
-        {
-          dia: "Viernes",
-          horaLlegada: this.user.horario[5]
-        },
-        {
-          dia: "Sabado",
-          horaLlegada: this.user.horario[6]
-        },
-        {
-          dia: "Domingo",
-          horaLlegada: this.user.horario[0]
-        }
-      ];
-    },
+    // horarioSemanal() {
+    //   return [
+    //     {
+    //       dia: "Lunes",
+    //       horaLlegada: this.user.horario.monday
+    //     },
+    //     {
+    //       dia: "Martes",
+    //       horaLlegada: this.user.horario.tuesday
+    //     },
+    //     {
+    //       dia: "Miercoles",
+    //       horaLlegada: this.user.horario.wednesday
+    //     },
+    //     {
+    //       dia: "Jueves",
+    //       horaLlegada: this.user.horario.thursday
+    //     },
+    //     {
+    //       dia: "Viernes",
+    //       horaLlegada: this.user.horario.friday
+    //     },
+    //     {
+    //       dia: "Sabado",
+    //       horaLlegada: this.user.horario.saturday
+    //     },
+    //     {
+    //       dia: "Domingo",
+    //       horaLlegada: this.user.horario.sunday
+    //     }
+    //   ];
+    // },
     serias() {
       let objUP = {
         name: "UP",
@@ -131,9 +151,10 @@ export default {
     }
   },
   data: () => ({
+    open: false,
     user: {},
     historicoSessions: [],
-
+    value: null,
     chartOptions: {
       colors: ["#E85F14", "#A538B6", "#4E5FBB", "#4E5FBB", "#ff0000"],
       plotOptions: {
@@ -191,6 +212,13 @@ export default {
   methods: {
     emitClose() {
       this.$emit("close-historico");
+    },
+
+    updateDay(day, value) {
+      let dia = `horario.${day}`;
+      this.$firestore.user.update({
+        [dia]: value
+      });
     }
   }
 };

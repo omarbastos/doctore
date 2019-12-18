@@ -13,7 +13,7 @@ import moment from "moment";
 import VueCarousel from "vue-carousel";
 import Vuex from "vuex";
 import Vuesax from "vuesax";
-
+import "ant-design-vue/dist/antd.css";
 import "vuesax/dist/vuesax.css"; //Vuesax styles
 Vue.use(Vuesax, {
   // options here

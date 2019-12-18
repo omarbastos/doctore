@@ -5,23 +5,35 @@
         <thead class="naranja">
           <tr>
             <th class="white--text text-center font-weight-bold">AGENTE</th>
-            <th class="white--text text-center font-weight-bold">HORA DE LLEGADA</th>
+            <th class="white--text text-center font-weight-bold">
+              HORA DE LLEGADA
+            </th>
 
             <th class="white--text text-center font-weight-bold">TARDIAS</th>
             <th class="white--text text-center font-weight-bold">ESTATUS</th>
           </tr>
         </thead>
         <tbody>
-          <tr @click="selectAgent(item)" v-for="(item, index) in sessions" :key="index">
-            <td class="text-center font-weight-bold font-italic">{{ item.fullname }}</td>
-            <td class="text-center font-weight-bold">{{ item.llegada.createdAt | formatLlegada}}</td>
+          <tr
+            @click="selectAgent(item)"
+            v-for="(item, index) in sessions"
+            :key="index"
+          >
+            <td class="text-center font-weight-bold font-italic">
+              {{ item.fullname }}
+            </td>
+            <td class="text-center font-weight-bold">
+              {{ item.llegada.createdAt | formatLlegada }}
+            </td>
             <td
               :class="
                 item.tardias > 0
                   ? 'text-center   tardia-red'
                   : 'text-center  tardia '
               "
-            >{{ item.tardias }}</td>
+            >
+              {{ item.tardias }}
+            </td>
             <td class="text-center">
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
@@ -30,7 +42,8 @@
                       :color="
                         item.status.text == 'Disponible' ? '#12560d' : '#ff0000'
                       "
-                    >{{ item.status.valor | estatusSwitch }}</v-icon>
+                      >{{ item.status.valor | estatusSwitch }}</v-icon
+                    >
                   </v-btn>
                 </template>
                 <span>{{ item.status.text.toUpperCase() }}</span>
@@ -48,7 +61,8 @@
         elevation="24"
         class="white--text font-weight-bold"
         @click="exportExcel"
-      >Export to Excel</v-btn>
+        >Export to Excel</v-btn
+      >
     </div>
   </div>
 </template>
