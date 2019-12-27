@@ -3,9 +3,7 @@
     <v-row justify="center" align="center" v-if="!showHistorico">
       <v-col>
         <div class="container chat">
-          <h2 class="text-primary text-center">
-            Team {{ $store.getters.userGrupo }}
-          </h2>
+          <h2 class="text-primary text-center">Team {{ grupoTrabajo }}</h2>
           <v-divider></v-divider>
           <div class="card">
             <div class="card-body">
@@ -32,7 +30,10 @@
             </div>
             <v-divider></v-divider>
             <div class="card-action">
-              <CreateMessage :name="$store.getters.userFullName" />
+              <CreateMessage
+                :grupo="grupoTrabajo"
+                :name="$store.getters.userFullName"
+              />
             </div>
           </div>
         </div>
@@ -51,12 +52,19 @@
       :agent="temporalAgent"
       v-if="showHistorico"
     ></historico-llegada>
-    <agent-table
-      :sessions="sessionesFiltradas"
-      data-aos="zoom-in"
-      @agent-selected="agentSelected"
-      v-else
-    ></agent-table>
+    <div   v-else class="">
+        <agent-table
+          :sessions="sessionesFiltradas"
+          data-aos="zoom-in"
+          @agent-selected="agentSelected"
+
+        ></agent-table>
+        <div class="container">
+
+
+        <users-supervisor  @click:row="agentfromData"></users-supervisor></div>
+    </div>
+
   </div>
 </template>
 
@@ -68,12 +76,14 @@ import AgentTable from "../components/AgentTable.vue";
 import ResumenDisponibilidad from "../components/ResumenDisponibilidad.vue";
 import HistoricoLlegada from "../components/HistoricoLlegada.vue";
 import store from "../store";
+import UsersSupervisor from "../components/UsersSupervisor.vue"
 export default {
   components: {
     AgentTable,
     ResumenDisponibilidad,
     HistoricoLlegada,
-    CreateMessage
+    CreateMessage,
+    UsersSupervisor
   },
   firestore() {
     return {
@@ -140,12 +150,16 @@ export default {
       this.temporalAgent = payload;
       this.showHistorico = true;
     },
+    agentfromData(payload) {
+      this.temporalAgent.users = payload.uid;
+      this.showHistorico = true;
+    },
     hideHistorico() {
       this.showHistorico = false;
     }
   },
   created() {
-    let ref = db.collection("messages").orderBy("timestamp");
+    let ref = db.collection(this.grupoTrabajo).orderBy("timestamp");
     ref.onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type == "added") {

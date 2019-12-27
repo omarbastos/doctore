@@ -31,7 +31,7 @@
 import { db } from "../firebase";
 export default {
   name: "CreateMessage",
-  props: ["name"],
+  props: ["name", "grupo"],
   data() {
     return {
       newMessage: null,
@@ -41,7 +41,7 @@ export default {
   methods: {
     createMessage() {
       if (this.newMessage) {
-        db.collection("messages").add({
+        db.collection(this.grupo).add({
           message: this.newMessage,
           name: this.name,
           timestamp: Date.now()

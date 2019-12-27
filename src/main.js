@@ -15,6 +15,10 @@ import Vuex from "vuex";
 import Vuesax from "vuesax";
 import "ant-design-vue/dist/antd.css";
 import "vuesax/dist/vuesax.css"; //Vuesax styles
+
+import JsonExcel from 'vue-json-excel'
+
+Vue.component('downloadExcel', JsonExcel)
 Vue.use(Vuesax, {
   // options here
 });
@@ -25,7 +29,7 @@ Vue.filter("formatDate", function(value) {
     return moment.unix(value).format("LT");
   }
 });
-
+Vue.use(require("vue-chat-scroll"));
 Vue.use(VueApexCharts);
 
 Vue.component("apexchart", VueApexCharts);

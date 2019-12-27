@@ -32,6 +32,7 @@ const currentUser = auth.currentUser;
 // firebase collections
 const usersCollection = db.collection("users");
 const sessionsCollection = db.collection("sessions");
+const gruposCollection = db.collection("grupos");
 
 export {
   db,
@@ -40,5 +41,6 @@ export {
   currentUser,
   usersCollection,
   sessionsCollection,
+  gruposCollection,
   onChange
 };

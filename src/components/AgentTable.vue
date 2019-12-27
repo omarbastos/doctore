@@ -5,35 +5,23 @@
         <thead class="naranja">
           <tr>
             <th class="white--text text-center font-weight-bold">AGENTE</th>
-            <th class="white--text text-center font-weight-bold">
-              HORA DE LLEGADA
-            </th>
+            <th class="white--text text-center font-weight-bold">HORA DE LLEGADA</th>
 
             <th class="white--text text-center font-weight-bold">TARDIAS</th>
             <th class="white--text text-center font-weight-bold">ESTATUS</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            @click="selectAgent(item)"
-            v-for="(item, index) in sessions"
-            :key="index"
-          >
-            <td class="text-center font-weight-bold font-italic">
-              {{ item.fullname }}
-            </td>
-            <td class="text-center font-weight-bold">
-              {{ item.llegada.createdAt | formatLlegada }}
-            </td>
+          <tr @click="selectAgent(item)" v-for="(item, index) in sessions" :key="index">
+            <td class="text-center font-weight-bold font-italic">{{ item.fullname }}</td>
+            <td class="text-center font-weight-bold">{{ item.llegada.createdAt | formatLlegada }}</td>
             <td
               :class="
                 item.tardias > 0
                   ? 'text-center   tardia-red'
                   : 'text-center  tardia '
               "
-            >
-              {{ item.tardias }}
-            </td>
+            >{{ item.tardias }}</td>
             <td class="text-center">
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
@@ -42,8 +30,7 @@
                       :color="
                         item.status.text == 'Disponible' ? '#12560d' : '#ff0000'
                       "
-                      >{{ item.status.valor | estatusSwitch }}</v-icon
-                    >
+                    >{{ item.status.valor | estatusSwitch }}</v-icon>
                   </v-btn>
                 </template>
                 <span>{{ item.status.text.toUpperCase() }}</span>
@@ -61,8 +48,7 @@
         elevation="24"
         class="white--text font-weight-bold"
         @click="exportExcel"
-        >Export to Excel</v-btn
-      >
+      >Export to Excel</v-btn>
     </div>
   </div>
 </template>
@@ -71,89 +57,7 @@ import moment from "moment";
 import XLSX from "xlsx";
 export default {
   props: {
-    sessions: {},
-
-    datos: {
-      type: Object,
-      default: () => ({
-        Agentes: [
-          {
-            agente: "Carlos",
-            llegada: "1575462650",
-            estatus: "almuerzo",
-            tardias: "1",
-            name: "Test emit",
-            data: [4, 3, 4, 4, 5, 5, 2, 9, 2, 5, 1, 5, 13, 9, 17, 2, 7, 5]
-          },
-          {
-            agente: "Yuja",
-            llegada: "1575462650",
-            estatus: "disponible",
-            tardias: "1"
-          },
-          {
-            agente: "Aleidri",
-            llegada: "1575462650",
-            estatus: "up",
-            tardias: "1"
-          },
-          {
-            agente: "Anggy",
-            llegada: "1575462650",
-            estatus: "almuerzo",
-            tardias: "1"
-          },
-          {
-            agente: "Desire",
-            llegada: "1575462650",
-            estatus: "disponible",
-            tardias: "0"
-          },
-          {
-            agente: "Daniel",
-            llegada: "1575462650",
-            estatus: "disponible",
-            tardias: "2"
-          },
-          {
-            agente: "Ligser",
-            llegada: "1575446854",
-            estatus: "rs",
-            tardias: "4"
-          },
-          {
-            agente: "Lignail",
-            llegada: "1575462650",
-            estatus: "disponible",
-            tardias: "1"
-          },
-          {
-            agente: "Oscar",
-            llegada: "1575462650",
-            estatus: "coffe",
-            tardias: "0"
-          },
-          {
-            agente: "Omar",
-            llegada: "1575462650",
-            estatus: "almuerzo",
-            tardias: "1"
-          },
-          {
-            agente: "Javier",
-            llegada: "1575462650",
-            estatus: "coffe",
-            tardias: "0"
-          },
-          {
-            agente: "Juan",
-            llegada: "1575462650",
-            estatus: "disponible",
-            tardias: "0"
-          }
-        ]
-      })
-    }
+    sessions: {}
   },
   data: () => ({}),
   filters: {

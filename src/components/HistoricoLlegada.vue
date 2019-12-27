@@ -11,16 +11,14 @@
               <tr>
                 <th class="text-center subtitle-1">Agente</th>
                 <th class="text-center subtitle-1">Asistencias</th>
+                <th class="text-center subtitle-1">Tardias </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="text-center font-weight-bold">
-                  {{ user.fullname }}
-                </td>
-                <td class="text-center font-weight-bold">
-                  {{ user.asistencias }}
-                </td>
+                <td class="text-center font-weight-bold">{{ user.fullname }}</td>
+                <td class="text-center font-weight-bold">{{ user.asistencias }}</td>
+                <td class="text-center font-weight-bold">{{ tardias }}</td>
               </tr>
             </tbody>
           </template>
@@ -31,17 +29,22 @@
     <v-divider></v-divider>
 
     <div id="chart">
-      <apexchart
-        type="bar"
-        height="350"
-        :options="chartOptions"
-        :series="serias"
-      />
+      <apexchart type="bar" height="350" :options="chartOptions" :series="serias" />
     </div>
     <v-divider></v-divider>
 
-    <v-btn fab @click="emitClose" absolute bottom right color="red">
-      <v-icon color="white">mdi-close</v-icon>
+    <v-btn
+      fab
+      @click="emitClose"
+      color="error"
+      large
+      dark
+      right
+      bottom
+      fixed
+      class="v-btn--example"
+    >
+      <v-icon color="white">mdi-arrow-left</v-icon>
     </v-btn>
   </div>
 </template>
@@ -105,6 +108,10 @@ export default {
     //     }
     //   ];
     // },
+    tardias(){
+        let result = this.historicoSessions.reduce(function (acc, obj) { return acc + obj.tardias; }, 0); // 7
+        return result
+    },
     serias() {
       let objUP = {
         name: "UP",

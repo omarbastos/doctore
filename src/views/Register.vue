@@ -1,10 +1,6 @@
 <template>
   <v-container class="fill-height" fluid>
-    <v-snackbar
-      :timeout="snackbar.timeout"
-      :color="snackbar.color"
-      v-model="snackbar.status"
-    >
+    <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
@@ -20,17 +16,10 @@
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text"
-              >Registrar un nuevo usuario</v-toolbar-title
-            >
+            <v-toolbar-title class="black--text">Registrar un nuevo usuario</v-toolbar-title>
           </v-toolbar>
           <v-card v-if="errors && errors.length">
-            <v-card-text
-              class="red--text"
-              v-for="(err, index) of errors"
-              :key="index"
-              >{{ err }}</v-card-text
-            >
+            <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
           </v-card>
           <v-card-text>
             <v-form>
@@ -84,10 +73,11 @@
                 persistent-hint
                 :prepend-icon="register.level.abbr"
               ></v-select>
+
               <v-select
                 v-model="register.grupo"
                 hint="Grupo de trabajo"
-                :items="groups"
+                :items="listaGrupos"
                 item-text="Grupo"
                 item-value="abbr"
                 label="Select"
@@ -109,11 +99,16 @@
 </template>
 
 <script>
+import { gruposCollection } from "../firebase";
 export default {
   props: {
     source: String
   },
+  firestore() {
+    return { grupos: gruposCollection };
+  },
   data: () => ({
+    grupos: [],
     errors: [],
     snackbar: {
       timeout: 2000,
@@ -135,7 +130,6 @@ export default {
     rePassword: "",
     items: [
       { state: "Supervisor", abbr: "mdi-account-supervisor-circle" },
-      { state: "Master", abbr: "mdi-account-tie" },
       { state: "Agente", abbr: "mdi-account-circle" }
     ],
     groups: ["Turrucares"]
@@ -146,6 +140,9 @@ export default {
         this.register.password === this.rePassword
           ? false
           : "Password must match";
+    },
+    listaGrupos() {
+      return this.grupos.map(({ nombre }) => nombre);
     }
   },
   methods: {

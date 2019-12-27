@@ -238,6 +238,7 @@ export default new Vuex.Store({
         usersCollection
           .doc(data.user.uid)
           .set({
+              tardias: 0,
             uid: data.user.uid,
             email: register.email,
             fullname: register.fullname,

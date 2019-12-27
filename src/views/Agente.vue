@@ -19,7 +19,7 @@
           :flag="session.UP.flag"
         ></up-reloj>
       </div>
-     <div :class="classAi">
+      <div :class="classAi">
         <ai-reloj
           :fbTotalTime="session.AI.totalTime"
           :disable="session.AI.disable"
@@ -46,11 +46,9 @@
           @cf1-ended="flagCf1"
         ></cf1-reloj>
       </div>
- <div :class="classHora">
+      <div :class="classHora">
         <div class="container chat">
-          <h2 class="text-primary text-center">
-            Team {{ $store.getters.userGrupo }}
-          </h2>
+          <h2 class="text-primary text-center">Team {{ userGrupo }}</h2>
           <v-divider></v-divider>
           <div class="card">
             <div class="card-body">
@@ -77,12 +75,15 @@
             </div>
             <v-divider></v-divider>
             <div class="card-action">
-              <CreateMessage :name="$store.getters.userFullName" />
+              <CreateMessage
+                :grupo="userGrupo"
+                :name="$store.getters.userFullName"
+              />
             </div>
           </div>
         </div>
       </div>
-      
+
       <div :class="classCf2">
         <cf2-reloj
           :fbTotalTime="session.CF2.totalTime"
@@ -114,7 +115,8 @@ import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
 import CreateMessage from "@/components/CreateMessage";
-import { db, sessionsCollection, increment } from "../firebase";
+import { db,usersCollection, sessionsCollection, increment } from "../firebase";
+
 export default {
   props: {
     fbTotalTime: Number
@@ -124,6 +126,7 @@ export default {
   data: () => ({
     messages: [],
     sessions: [],
+    user:[],
     session: {},
     snackbar: {
       timeout: 9999999,
@@ -150,6 +153,7 @@ export default {
   }),
   firestore() {
     return {
+        user: usersCollection.doc(this.$store.getters.uid),
       sessions: sessionsCollection,
       session: sessionsCollection.doc(this.docKey)
     };
@@ -158,10 +162,13 @@ export default {
   computed: {
     docKey() {
       return this.$store.getters.sesionId;
+    },
+    userGrupo() {
+      return this.$store.getters.userGrupo;
     }
   },
   created() {
-    let ref = db.collection("messages").orderBy("timestamp");
+    let ref = db.collection(this.userGrupo).orderBy("timestamp");
     ref.onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type == "added") {
@@ -190,6 +197,10 @@ export default {
           tardias: increment
         })
         .then(() => this.pauseUp(totalTime));
+        this.$firestore.user
+          .update({
+              tardias: increment
+          })
     },
     flagAi(totalTime) {
       //Guardar en la base de datos que se comio el UP
@@ -204,6 +215,10 @@ export default {
         .then(() => {
           this.aiText = "TARDIA POR ALMUERZO";
         });
+        this.$firestore.user
+          .update({
+              tardias: increment
+          })
     },
 
     flagCf2(totaltime) {
@@ -218,6 +233,10 @@ export default {
         .then(() => {
           this.cf2Text = "TARDIA POR CAFE2";
         });
+        this.$firestore.user
+          .update({
+              tardias: increment
+          })
     },
 
     flagCf1(totalTime) {
@@ -232,6 +251,10 @@ export default {
         .then(() => {
           this.cf1Text = "TARDIA POR CAFE1";
         });
+        this.$firestore.user
+          .update({
+              tardias: increment
+          })
     },
     pauseUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
