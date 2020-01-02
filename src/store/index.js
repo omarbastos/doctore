@@ -163,7 +163,7 @@ export default new Vuex.Store({
           .add({
             user: getters.uid,
             fullname: getters.userFullName,
-            tardias: 0,
+            tardias: flagLlegada ? 1 : 0,
             grupo: getters.userGrupo,
 
             AI: {
@@ -219,7 +219,8 @@ export default new Vuex.Store({
                   .update({
                     lastSession: moment(fecha).format("MMM Do YY"),
                     lastSessionID: docRef.id,
-                    asistencias: increment
+                    asistencias: increment,
+                    tardias: flagLlegada ? 1 : 0
                   })
                   .then(() => {
                     resolve();
@@ -238,7 +239,7 @@ export default new Vuex.Store({
         usersCollection
           .doc(data.user.uid)
           .set({
-              tardias: 0,
+            tardias: 0,
             uid: data.user.uid,
             email: register.email,
             fullname: register.fullname,

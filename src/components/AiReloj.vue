@@ -36,7 +36,8 @@ export default {
       default: "DETENER ALMUERZO"
     },
     disable: Boolean,
-    fbTotalTime: Number
+    fbTotalTime: Number,
+    clock: Boolean
   },
   created: function() {
     // `this` hace referencia a la instancia vm
@@ -44,8 +45,6 @@ export default {
   },
   // ========================
   data: () => ({
-    clock: false,
-
     timer: null,
     totalTime: 5,
     resetButton: false,

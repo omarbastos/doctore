@@ -3,13 +3,14 @@ import "firebase/firestore";
 
 // firebase init goes here
 const config = {
-  apiKey: "AIzaSyAtwUSnMzMSzRGxrZlL3z5CwLADZ-BIYDM",
-  authDomain: "doctore-alfa.firebaseapp.com",
-  databaseURL: "https://doctore-alfa.firebaseio.com",
-  projectId: "doctore-alfa",
-  storageBucket: "doctore-alfa.appspot.com",
-  messagingSenderId: "409330698434",
-  appId: "1:409330698434:web:042bc27403d082c19d135b"
+  apiKey: "AIzaSyD0-SmnnZUkMQ79WQ9BoGmxg5gxHeglNk4",
+  authDomain: "doctore-fix.firebaseapp.com",
+  databaseURL: "https://doctore-fix.firebaseio.com",
+  projectId: "doctore-fix",
+  storageBucket: "doctore-fix.appspot.com",
+  messagingSenderId: "705365696235",
+  appId: "1:705365696235:web:5f734b3c190cfc73f2a8ae",
+  measurementId: "G-4VHP7MZWTF"
 };
 
 firebase.initializeApp(config);

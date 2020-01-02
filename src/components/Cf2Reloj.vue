@@ -36,12 +36,11 @@ export default {
       default: "DETENER CAFE2"
     },
     disable: Boolean,
-    fbTotalTime: Number
+    fbTotalTime: Number,
+    clock: Boolean
   },
   // ========================
   data: () => ({
-    clock: false,
-
     timer: null,
     totalTime: 10,
     resetButton: false,

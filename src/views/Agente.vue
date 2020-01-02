@@ -1,17 +1,13 @@
 <template>
   <div class="agente my-4">
-    <v-snackbar
-      top
-      :timeout="snackbar.timeout"
-      :color="snackbar.color"
-      v-model="snackbar.status"
-    >
+    <v-snackbar top :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.status">
       {{ snackbar.text }}
       <v-btn color="white" text @click="snackbar.status = false">Close</v-btn>
     </v-snackbar>
     <div class="row">
       <div :class="classUp">
         <up-reloj
+          :clock="session.UP.totalTime >= 0  ? true:false"
           :fbTotalTime="session.UP.totalTime"
           @up-stop="pauseUp"
           @up-start="startUp"
@@ -21,6 +17,7 @@
       </div>
       <div :class="classAi">
         <ai-reloj
+          :clock="session.AI.totalTime > 0 ? true:false"
           :fbTotalTime="session.AI.totalTime"
           :disable="session.AI.disable"
           :aiText="aiText"
@@ -31,6 +28,7 @@
       </div>
       <div :class="classRs">
         <rs-reloj
+          :clock="session.RS.totalTime  >=  0  ? true:false"
           :fbTotalTime="session.RS.totalTime"
           @rs-stop="stopRs"
           @rs-start="startRs"
@@ -38,6 +36,7 @@
       </div>
       <div :class="classCf1">
         <cf1-reloj
+          :clock="session.CF1.totalTime > 0 ? true:false"
           :disable="session.CF1.disable"
           :fbTotalTime="session.CF1.totalTime"
           :cf2Text="cf2Text"
@@ -52,33 +51,29 @@
           <v-divider></v-divider>
           <div class="card">
             <div class="card-body">
-              <p class="text-secondary nomessages" v-if="messages.length == 0">
-                [No messages yet!]
-              </p>
-              <div
-                class="messages"
-                v-chat-scroll="{ always: false, smooth: true }"
-              >
+              <p class="text-secondary nomessages" v-if="messages.length == 0">[No messages yet!]</p>
+              <div class="messages" v-chat-scroll="{ always: false, smooth: true }">
                 <div v-for="message in messages" :key="message.id">
-                  <v-chip class="ma-2" color="#fd9917">{{
+                  <v-chip class="ma-2" color="#fd9917">
+                    {{
                     message.name
-                  }}</v-chip
-                  ><br />
+                    }}
+                  </v-chip>
+                  <br />
                   <span>{{ message.message }}</span>
                   <br />
-                  <v-chip class="float-right  peque " outlined>{{
+                  <v-chip class="float-right peque" outlined>
+                    {{
                     message.timestamp
-                  }}</v-chip>
+                    }}
+                  </v-chip>
                   <br />
                 </div>
               </div>
             </div>
             <v-divider></v-divider>
             <div class="card-action">
-              <CreateMessage
-                :grupo="userGrupo"
-                :name="$store.getters.userFullName"
-              />
+              <CreateMessage :grupo="userGrupo" :name="$store.getters.userFullName" />
             </div>
           </div>
         </div>
@@ -86,6 +81,7 @@
 
       <div :class="classCf2">
         <cf2-reloj
+          :clock="session.CF2.totalTime > 0 ? true:false"
           :fbTotalTime="session.CF2.totalTime"
           :disable="session.CF2.disable"
           :cf2Text="cf2Text"
@@ -102,7 +98,7 @@
           "{{ difusion }}".
         </div>
       </marquee-text>
-    </v-footer> -->
+    </v-footer>-->
   </div>
 </template>
 
@@ -115,7 +111,12 @@ import Cf2Reloj from "../components/Cf2Reloj.vue";
 import RsReloj from "../components/RsReloj.vue";
 import moment from "moment";
 import CreateMessage from "@/components/CreateMessage";
-import { db,usersCollection, sessionsCollection, increment } from "../firebase";
+import {
+  db,
+  usersCollection,
+  sessionsCollection,
+  increment
+} from "../firebase";
 
 export default {
   props: {
@@ -126,7 +127,7 @@ export default {
   data: () => ({
     messages: [],
     sessions: [],
-    user:[],
+    user: [],
     session: {},
     snackbar: {
       timeout: 9999999,
@@ -153,7 +154,7 @@ export default {
   }),
   firestore() {
     return {
-        user: usersCollection.doc(this.$store.getters.uid),
+      user: usersCollection.doc(this.$store.getters.uid),
       sessions: sessionsCollection,
       session: sessionsCollection.doc(this.docKey)
     };
@@ -197,10 +198,9 @@ export default {
           tardias: increment
         })
         .then(() => this.pauseUp(totalTime));
-        this.$firestore.user
-          .update({
-              tardias: increment
-          })
+      this.$firestore.user.update({
+        tardias: increment
+      });
     },
     flagAi(totalTime) {
       //Guardar en la base de datos que se comio el UP
@@ -215,10 +215,9 @@ export default {
         .then(() => {
           this.aiText = "TARDIA POR ALMUERZO";
         });
-        this.$firestore.user
-          .update({
-              tardias: increment
-          })
+      this.$firestore.user.update({
+        tardias: increment
+      });
     },
 
     flagCf2(totaltime) {
@@ -233,10 +232,9 @@ export default {
         .then(() => {
           this.cf2Text = "TARDIA POR CAFE2";
         });
-        this.$firestore.user
-          .update({
-              tardias: increment
-          })
+      this.$firestore.user.update({
+        tardias: increment
+      });
     },
 
     flagCf1(totalTime) {
@@ -251,10 +249,9 @@ export default {
         .then(() => {
           this.cf1Text = "TARDIA POR CAFE1";
         });
-        this.$firestore.user
-          .update({
-              tardias: increment
-          })
+      this.$firestore.user.update({
+        tardias: increment
+      });
     },
     pauseUp(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
@@ -272,18 +269,18 @@ export default {
       this.classHora = "col-md-4 d-flex align-center justify-center";
     },
     startUp(totalTime) {
-      this.$firestore.sessions.doc(this.docKey).update({
-        "status.text": "Uso Personal",
-        "status.valor": 2,
-        "UP.totalTime": totalTime
-      });
-
       this.classUp = "col-md-12 d-flex align-center justify-center";
       this.classCf1 = "hidden";
       this.classCf2 = "hidden";
       this.classRs = "hidden";
       this.classAi = "hidden";
       this.classHora = "hidden";
+
+      this.$firestore.sessions.doc(this.docKey).update({
+        "status.text": "Uso Personal",
+        "status.valor": 2,
+        "UP.totalTime": totalTime
+      });
     },
     stopAi(totalTime) {
       this.$firestore.sessions.doc(this.docKey).update({
@@ -438,9 +435,11 @@ export default {
   overflow-y: scroll;
   border-radius: 5px;
 }
-.peque{
-  font-size: 8px !important
+
+.peque {
+  font-size: 8px !important;
 }
+
 .outer {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   border-radius: 8px;
@@ -471,23 +470,28 @@ span.boss {
 
 h2 {
 }
-.chat h2{
-    font-size: 2.6em;
-    margin-bottom: 0px;
+
+.chat h2 {
+  font-size: 2.6em;
+  margin-bottom: 0px;
 }
-.chat h5{
-    margin-top: 0px;
-    margin-bottom: 40px;
+
+.chat h5 {
+  margin-top: 0px;
+  margin-bottom: 40px;
 }
-.chat span{
-    font-size: 1.2em;
+
+.chat span {
+  font-size: 1.2em;
 }
-.chat .time{
-    display: block;
-    font-size: 0.7em;
+
+.chat .time {
+  display: block;
+  font-size: 0.7em;
 }
-.messages{
-    max-height: 300px;
-    overflow: auto;
+
+.messages {
+  max-height: 300px;
+  overflow: auto;
 }
 </style>

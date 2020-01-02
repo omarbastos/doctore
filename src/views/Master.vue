@@ -33,11 +33,7 @@
     <v-container v-if="showNewGrupo">
       <v-row justify="center">
         <v-col cols="6">
-          <v-text-field
-            label="Crear nuevo grupo de trabajo"
-            outlined
-            v-model="newGrupo"
-          ></v-text-field>
+          <v-text-field label="Crear nuevo grupo de trabajo" outlined v-model="newGrupo"></v-text-field>
         </v-col>
         <v-col cols="1">
           <v-btn @click="enviarGrupo" block dark color="red">CREAR</v-btn>
@@ -52,45 +48,27 @@
             <v-divider></v-divider>
             <div class="card">
               <div class="card-body">
-                <p
-                  class="text-secondary nomessages"
-                  v-if="messages.length == 0"
-                >
-                  [No messages yet!]
-                </p>
-                <div
-                  class="messages"
-                  v-chat-scroll="{ always: false, smooth: true }"
-                >
+                <p class="text-secondary nomessages" v-if="messages.length == 0">[No messages yet!]</p>
+                <div class="messages" v-chat-scroll="{ always: false, smooth: true }">
                   <div v-for="message in messages" :key="message.id">
-                    <v-chip class="ma-2" color="#fd9917">
-                      {{ message.name }}
-                    </v-chip>
+                    <v-chip class="ma-2" color="#fd9917">{{ message.name }}</v-chip>
                     <br />
                     <span>{{ message.message }}</span>
                     <br />
-                    <v-chip class="float-right peque" outlined>
-                      {{ message.timestamp }}
-                    </v-chip>
+                    <v-chip class="float-right peque" outlined>{{ message.timestamp }}</v-chip>
                     <br />
                   </div>
                 </div>
               </div>
               <v-divider></v-divider>
               <div class="card-action">
-                <CreateMessage
-                  :grupo="grupoTrabajo"
-                  :name="$store.getters.userFullName"
-                />
+                <CreateMessage :grupo="grupoTrabajo" :name="$store.getters.userFullName" />
               </div>
             </div>
           </div>
         </v-col>
         <v-col>
-          <resumen-disponibilidad
-            :series="series"
-            data-aos="zoom-in"
-          ></resumen-disponibilidad>
+          <resumen-disponibilidad :series="series" data-aos="zoom-in"></resumen-disponibilidad>
         </v-col>
       </v-row>
 
@@ -237,8 +215,7 @@ export default {
         .then(() => {
           this.text = "Se ha creado el grupo con exito";
           this.snackbar = true;
-        })
-        .catch(error => console.log(error));
+        });
     }
   }
 };

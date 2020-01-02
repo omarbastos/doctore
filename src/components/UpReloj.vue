@@ -39,11 +39,11 @@
 export default {
   props: {
     fbTotalTime: Number,
-    flag: Boolean
+    flag: Boolean,
+    clock: Boolean
   },
   // ========================
   data: () => ({
-    clock: false,
     disableUP: false,
     timer: null,
     totalTime: 0,
@@ -61,7 +61,7 @@ export default {
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
       this.clock = true;
-      this.$emit("up-start");
+      this.$emit("up-start", this.totalTime);
     },
     pauseTimer: function() {
       clearInterval(this.timer);

@@ -38,11 +38,11 @@
 <script>
 export default {
   props: {
-    fbTotalTime: Number
+    fbTotalTime: Number,
+    clock: Boolean
   },
   // ========================
   data: () => ({
-    clock: false,
     disableUP: false,
     timer: null,
     totalTime: 0,
