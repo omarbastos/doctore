@@ -21,7 +21,8 @@ export default new Vuex.Store({
       createdAt: localStorage.getItem("userCreatedAt") || "",
       uid: localStorage.getItem("uid") || "",
       email: localStorage.getItem("userEmail") || "",
-      horario: JSON.parse(localStorage.getItem("userHorario")) || []
+      horario: JSON.parse(localStorage.getItem("userHorario")) || [],
+      lastSession: localStorage.getItem("lastSession") || ""
     }
   },
   mutations: {
@@ -37,7 +38,9 @@ export default new Vuex.Store({
       state.user.fullname = user.fullname;
       state.user.createdAt = user.createdAt;
       state.user.horario = user.horario;
+      state.user.lastSession = user.lastSession;
       localStorage.setItem("userGrupo", user.grupo);
+      localStorage.setItem("lastSession", user.lastSession);
       localStorage.setItem("userLevel", user.level);
       localStorage.setItem("userEmail", user.email);
       localStorage.setItem("uid", user.uid);
@@ -47,13 +50,15 @@ export default new Vuex.Store({
     },
     LOGOUT(state) {
       state.sesionId = "";
+      state.user.lastSession = "";
       state.user.level = "";
       state.user.email = "";
       state.user.uid = "";
       state.user.fullname = "";
       state.user.createdAt = "";
       state.user.grupo = "";
-      (state.user.horario = ""), localStorage.clear();
+      state.user.horario = "";
+      localStorage.clear();
     }
   },
   actions: {
@@ -153,11 +158,14 @@ export default new Vuex.Store({
 
         // console.log(horarioDate);
         let flagLlegada = false;
+        let llegadaMinutes = 0;
         // console.log(currentTime > horarioDate);
         if (currentTime > horarioDate) {
           flagLlegada = true;
+          llegadaMinutes = currentTime - horarioDate;
         } else {
           flagLlegada = false;
+          llegadaMinutes = 0;
         }
         db.collection("sessions")
           .add({
@@ -203,7 +211,8 @@ export default new Vuex.Store({
             },
             llegada: {
               createdAt: moment(fecha).format(),
-              flag: flagLlegada
+              flag: flagLlegada,
+              llegadaMinutes: llegadaMinutes
             },
             status: {
               text: "Disponible",
@@ -317,6 +326,8 @@ export default new Vuex.Store({
     isLoggedIn: state => !!state.user.uid,
     isMaster: state => (state.user.level === "Master" ? true : false),
     isSupervisor: state => (state.user.level === "Supervisor" ? true : false),
-    isAgente: state => (state.user.level === "Agente" ? true : false)
+    isAgente: state => (state.user.level === "Agente" ? true : false),
+    isSessionToday: state =>
+      state.user.lastSession == moment().format("MMM Do YY") ? true : false
   }
 });

@@ -11,7 +11,7 @@
               <tr>
                 <th class="text-center subtitle-1">Agente</th>
                 <th class="text-center subtitle-1">Asistencias</th>
-                <th class="text-center subtitle-1">Tardias </th>
+                <th class="text-center subtitle-1">Tardias</th>
               </tr>
             </thead>
             <tbody>
@@ -51,6 +51,7 @@
 
 <script>
 import TablaHorario from "./TablaHorario";
+import moment from "moment";
 import { usersCollection, sessionsCollection } from "../firebase";
 export default {
   components: {
@@ -108,9 +109,11 @@ export default {
     //     }
     //   ];
     // },
-    tardias(){
-        let result = this.historicoSessions.reduce(function (acc, obj) { return acc + obj.tardias; }, 0); // 7
-        return result
+    tardias() {
+      let result = this.historicoSessions.reduce(function(acc, obj) {
+        return acc + obj.tardias;
+      }, 0); // 7
+      return result;
     },
     serias() {
       let objUP = {
@@ -119,7 +122,7 @@ export default {
       };
       objUP.data = this.historicoSessions.map(({ UP, llegada }) => [
         llegada.createdAt,
-        UP.flag * 1
+        UP.flag ? moment(UP.finishedAt).diff(UP.flagAt, "minutes") : 0
       ]);
       let objLlegada = {
         name: "llegada",
@@ -127,7 +130,7 @@ export default {
       };
       objLlegada.data = this.historicoSessions.map(({ llegada }) => [
         llegada.createdAt,
-        llegada.flag * 1
+        llegada.llegadaMinutes
       ]);
       let objAI = {
         name: "AI",
@@ -135,7 +138,7 @@ export default {
       };
       objAI.data = this.historicoSessions.map(({ AI, llegada }) => [
         llegada.createdAt,
-        AI.flag * 1
+        AI.flag ? moment(AI.finishedAt).diff(AI.flagAt, "minutes") : 0
       ]);
       let objCF1 = {
         name: "CF1",
@@ -143,7 +146,7 @@ export default {
       };
       objCF1.data = this.historicoSessions.map(({ CF1, llegada }) => [
         llegada.createdAt,
-        CF1.flag * 1
+        CF1.flag ? moment(CF1.finishedAt).diff(CF1.flagAt, "minutes") : 0
       ]);
       let objCF2 = {
         name: "CF2",
@@ -151,9 +154,17 @@ export default {
       };
       objCF2.data = this.historicoSessions.map(({ llegada, CF2 }) => [
         llegada.createdAt,
-        CF2.flag * 1
+        CF2.flag ? moment(CF2.finishedAt).diff(CF2.flagAt, "minutes") : 0
       ]);
-      let series = [objUP, objAI, objCF1, objCF2, objLlegada];
+      let objRS = {
+        name: "RS",
+        data: []
+      };
+      objRS.data = this.historicoSessions.map(({ llegada, RS }) => [
+        llegada.createdAt,
+        Math.round(RS.totalTime / 60)
+      ]);
+      let series = [objUP, objAI, objCF1, objCF2, objLlegada, objRS];
       return series;
     }
   },
@@ -163,7 +174,14 @@ export default {
     historicoSessions: [],
     value: null,
     chartOptions: {
-      colors: ["#E85F14", "#A538B6", "#4E5FBB", "#4E5FBB", "#ff0000"],
+      colors: [
+        "#E85F14",
+        "#A538B6",
+        "#4E5FBB",
+        "#4E5FBB",
+        "#ff0000",
+        "#836357"
+      ],
       plotOptions: {
         bar: {
           horizontal: false,
@@ -185,11 +203,11 @@ export default {
       },
       yaxis: {
         title: {
-          text: "Tardias"
+          text: "Minutos de la tardía"
         },
         tickAmount: 2,
         min: 0,
-        max: 2
+        max: 60
       },
       fill: {
         opacity: 1
@@ -209,7 +227,7 @@ export default {
       tooltip: {
         y: {
           formatter: function(val) {
-            return val + " tardia";
+            return val === 0 ? 0 : val + " minutos";
           }
         }
       }
