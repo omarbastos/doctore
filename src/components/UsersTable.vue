@@ -7,13 +7,27 @@
         label="Search"
         single-line
         hide-details
-      ></v-text-field>
+        @click:append-outer="exportExcel"
+      >
+        <template v-slot:append-outer>
+          <download-excel
+            class="btn btn-default"
+            :data="users"
+            :fields="json_fields"
+            worksheet="My Worksheet"
+            name="filename.xls"
+          >
+            <v-icon color="#FC9A3A">mdi-file-excel</v-icon>
+          </download-excel>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-data-table
+      @click:row="selectAgent"
       :headers="headers"
       :items="users"
       :search="search"
-      :items-per-page="10"
+      :items-per-page="20"
       class="elevation-1"
     ></v-data-table>
   </v-card>
@@ -27,11 +41,19 @@ export default {
   data: () => ({
     users: {},
     search: "",
+    json_fields: {
+      Agentes: "fullname",
+      Team: "grupo",
+      Tardias: "tardias",
+      Asistencia: "asistencias",
+      Cargo: "level",
+      "Ultima sesión": "lastSession"
+    },
     headers: [
       {
         text: "Agentes",
         align: "left",
-        sortable: false,
+        sortable: true,
         value: "fullname",
         filterable: true
       },
@@ -62,8 +84,9 @@ export default {
       XLSX.utils.book_append_sheet(workbook, data, filename);
       XLSX.writeFile(workbook, `${filename}.xlsx`);
     },
+
     selectAgent(item) {
-      this.$emit("agent-selected", item);
+      this.$emit("user-selected", item);
     }
   }
 };

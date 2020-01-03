@@ -1,39 +1,30 @@
 <template>
   <v-card>
-
     <v-card-title>
       <v-text-field
-
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
         @click:append-outer="exportExcel"
-
       >
-
-
-       <template v-slot:append-outer>
-
-
-               <download-excel
-               class   = "btn btn-default"
-               :data   = "usersFiltradas"
-
-               :fields = "json_fields"
-               worksheet = "My Worksheet"
-               name    = "filename.xls">
-
-               <v-icon color="#FC9A3A">mdi-file-excel</v-icon>
-
-           </download-excel>
-             </template>
-  </v-text-field>
+        <template v-slot:append-outer>
+          <download-excel
+            class="btn btn-default"
+            :data="usersFiltradas"
+            :fields="json_fields"
+            worksheet="My Worksheet"
+            name="filename.xls"
+          >
+            <v-icon color="#FC9A3A">mdi-file-excel</v-icon>
+          </download-excel>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-data-table
-        id="myTable"
-      click:row
+      id="myTable"
+      @click:row="selectAgent"
       :headers="headers"
       :items="usersFiltradas"
       :search="search"
@@ -52,13 +43,13 @@ export default {
     users: {},
     search: "",
     json_fields: {
-          'Agentes': 'fullname',
-          'Team': 'grupo',
-          'Tardias': 'tardias',
-          'Asistencia': 'asistencias',
-          'Cargo': 'level',
-          'Ultima sesión': 'lastSession',
-      },
+      Agentes: "fullname",
+      Team: "grupo",
+      Tardias: "tardias",
+      Asistencia: "asistencias",
+      Cargo: "level",
+      "Ultima sesión": "lastSession"
+    },
 
     headers: [
       {
@@ -87,12 +78,12 @@ export default {
     };
   },
   computed: {
-      usersFiltradas() {
-        let self = this;
-        return self.users.filter(function(users) {
-          return users.grupo === self.$store.getters.userGrupo;
-        });
-      },
+    usersFiltradas() {
+      let self = this;
+      return self.users.filter(function(users) {
+        return users.grupo === self.$store.getters.userGrupo;
+      });
+    }
   },
   methods: {
     exportExcel: function() {
@@ -103,7 +94,9 @@ export default {
       XLSX.utils.book_append_sheet(workbook, data, filename);
       XLSX.writeFile(workbook, `${filename}.xlsx`);
     },
-
+    selectAgent(item) {
+      this.$emit("user-selected", item);
+    }
   }
 };
 </script>

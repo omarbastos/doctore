@@ -1,70 +1,87 @@
 <template>
   <div>
-    <v-row justify="center" align="center" v-if="!showHistorico">
-      <v-col>
-        <div class="container chat">
-          <h2 class="text-primary text-center">Team {{ grupoTrabajo }}</h2>
-          <v-divider></v-divider>
-          <div class="card">
-            <div class="card-body">
-              <p class="text-secondary nomessages" v-if="messages.length == 0">
-                [No messages yet!]
-              </p>
-              <div
-                class="messages"
-                v-chat-scroll="{ always: false, smooth: true }"
-              >
-                <div v-for="message in messages" :key="message.id">
-                  <v-chip class="ma-2" color="#fd9917">{{
-                    message.name
-                  }}</v-chip
-                  ><br />
-                  <span>{{ message.message }}</span>
-                  <br />
-                  <v-chip class="float-right  peque " outlined>{{
-                    message.timestamp
-                  }}</v-chip>
-                  <br />
-                </div>
-              </div>
-            </div>
-            <v-divider></v-divider>
-            <div class="card-action">
-              <CreateMessage
-                :grupo="grupoTrabajo"
-                :name="$store.getters.userFullName"
-              />
-            </div>
-          </div>
-        </div>
-      </v-col>
-      <v-col>
-        <resumen-disponibilidad
-          :series="series"
-          data-aos="zoom-in"
-        ></resumen-disponibilidad
-      ></v-col>
-    </v-row>
-
     <historico-llegada
       data-aos="zoom-in"
       @close-historico="hideHistorico"
       :agent="temporalAgent"
       v-if="showHistorico"
     ></historico-llegada>
-    <div   v-else class="">
+    <div v-else class>
+      <v-expansion-panels style="margin-top:20px" popout>
+        <v-expansion-panel>
+          <v-expansion-panel-header disable-icon-rotate>
+            Chat del Team
+            <template v-slot:actions>
+              <v-icon color="orange">mdi-forum</v-icon>
+            </template>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-row justify="center" align="center" v-if="!showHistorico">
+              <v-col>
+                <div class="container chat">
+                  <h2 class="text-primary text-center">Team {{ grupoTrabajo }}</h2>
+                  <v-divider></v-divider>
+                  <div class="card">
+                    <div class="card-body">
+                      <p
+                        class="text-secondary nomessages"
+                        v-if="messages.length == 0"
+                      >[No messages yet!]</p>
+                      <div class="messages" v-chat-scroll="{ always: false, smooth: true }">
+                        <div v-for="message in messages" :key="message.id">
+                          <v-chip class="ma-2" color="#fd9917">
+                            {{
+                            message.name
+                            }}
+                          </v-chip>
+                          <br />
+                          <span>{{ message.message }}</span>
+                          <br />
+                          <v-chip class="float-right peque" outlined>
+                            {{
+                            message.timestamp
+                            }}
+                          </v-chip>
+                          <br />
+                        </div>
+                      </div>
+                    </div>
+                    <v-divider></v-divider>
+                    <div class="card-action">
+                      <CreateMessage :grupo="grupoTrabajo" :name="$store.getters.userFullName" />
+                    </div>
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+          <v-expansion-panel-header disable-icon-rotate>
+            Lista de Usuarios del Grupo
+            <template v-slot:actions>
+              <v-icon color="orange">mdi-account-group</v-icon>
+            </template>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <users-supervisor @user-selected="agentfromData"></users-supervisor>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </div>
+    <v-row v-if="!showHistorico">
+      <v-col>
+        <resumen-disponibilidad :series="series" data-aos="zoom-in"></resumen-disponibilidad>
+      </v-col>
+      <v-col>
         <agent-table
           :sessions="sessionesFiltradas"
           data-aos="zoom-in"
           @agent-selected="agentSelected"
-
         ></agent-table>
-        <div class="container">
-
-
-        <users-supervisor  @click:row="agentfromData"></users-supervisor></div>
-    </div>
-
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -76,7 +93,7 @@ import AgentTable from "../components/AgentTable.vue";
 import ResumenDisponibilidad from "../components/ResumenDisponibilidad.vue";
 import HistoricoLlegada from "../components/HistoricoLlegada.vue";
 import store from "../store";
-import UsersSupervisor from "../components/UsersSupervisor.vue"
+import UsersSupervisor from "../components/UsersSupervisor.vue";
 export default {
   components: {
     AgentTable,
@@ -98,7 +115,9 @@ export default {
     sessions: [],
     messages: [],
     showHistorico: false,
-    temporalAgent: null
+    temporalAgent: {
+      user: null
+    }
   }),
   computed: {
     grupoTrabajo() {
@@ -151,7 +170,7 @@ export default {
       this.showHistorico = true;
     },
     agentfromData(payload) {
-      this.temporalAgent.users = payload.uid;
+      this.temporalAgent.user = payload.uid;
       this.showHistorico = true;
     },
     hideHistorico() {

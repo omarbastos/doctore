@@ -27,7 +27,7 @@
           </v-btn>
         </v-col>
       </v-row>
-      <users-table></users-table>
+      <users-table @user-selected="agentfromData"></users-table>
     </v-container>
 
     <v-container v-if="showNewGrupo">
@@ -42,34 +42,7 @@
     </v-container>
     <div v-if="showGrupo">
       <v-row justify="center" align="center" v-if="!showHistorico">
-        <v-col>
-          <div class="container chat">
-            <h2 class="text-primary text-center">Team {{ grupoTrabajo }}</h2>
-            <v-divider></v-divider>
-            <div class="card">
-              <div class="card-body">
-                <p class="text-secondary nomessages" v-if="messages.length == 0">[No messages yet!]</p>
-                <div class="messages" v-chat-scroll="{ always: false, smooth: true }">
-                  <div v-for="message in messages" :key="message.id">
-                    <v-chip class="ma-2" color="#fd9917">{{ message.name }}</v-chip>
-                    <br />
-                    <span>{{ message.message }}</span>
-                    <br />
-                    <v-chip class="float-right peque" outlined>{{ message.timestamp }}</v-chip>
-                    <br />
-                  </div>
-                </div>
-              </div>
-              <v-divider></v-divider>
-              <div class="card-action">
-                <CreateMessage :grupo="grupoTrabajo" :name="$store.getters.userFullName" />
-              </div>
-            </div>
-          </div>
-        </v-col>
-        <v-col>
-          <resumen-disponibilidad :series="series" data-aos="zoom-in"></resumen-disponibilidad>
-        </v-col>
+        <resumen-disponibilidad :series="series" data-aos="zoom-in"></resumen-disponibilidad>
       </v-row>
 
       <historico-llegada
@@ -104,7 +77,7 @@
 
 <script>
 import { db, gruposCollection, sessionsCollection } from "../firebase";
-import CreateMessage from "@/components/CreateMessage";
+
 import moment from "moment";
 import AgentTable from "../components/AgentTable.vue";
 import ResumenDisponibilidad from "../components/ResumenDisponibilidad.vue";
@@ -116,7 +89,7 @@ export default {
     AgentTable,
     ResumenDisponibilidad,
     HistoricoLlegada,
-    CreateMessage,
+
     UsersTable
   },
   firestore() {
@@ -141,7 +114,9 @@ export default {
     sessions: [],
     messages: [],
     showHistorico: false,
-    temporalAgent: null
+    temporalAgent: {
+      user: null
+    }
   }),
   computed: {
     listaGrupos() {
@@ -196,6 +171,12 @@ export default {
     agentSelected(payload) {
       this.temporalAgent = payload;
       this.showHistorico = true;
+    },
+    agentfromData(payload) {
+      this.temporalAgent.user = payload.uid;
+      this.grupoElegido = payload.grupo;
+      this.showHistorico = true;
+      this.showGrupo = true;
     },
     hideHistorico() {
       this.showHistorico = false;

@@ -19,8 +19,7 @@
               :class="
                 item.tardias > 0
                   ? 'text-center   tardia-red'
-                  : 'text-center  tardia '
-              "
+                  : 'text-center  tardia '"
             >{{ item.tardias }}</td>
             <td class="text-center">
               <v-tooltip right>
@@ -28,8 +27,7 @@
                   <v-btn icon v-on="on">
                     <v-icon
                       :color="
-                        item.status.text == 'Disponible' ? '#12560d' : '#ff0000'
-                      "
+                        item.status.text == 'Disponible' ? '#12560d' : '#ff0000'"
                     >{{ item.status.valor | estatusSwitch }}</v-icon>
                   </v-btn>
                 </template>
@@ -40,16 +38,6 @@
         </tbody>
       </template>
     </v-simple-table>
-
-    <div class="ma-4 d-flex justify-center">
-      <v-btn
-        x-large
-        color="#fd9917"
-        elevation="24"
-        class="white--text font-weight-bold"
-        @click="exportExcel"
-      >Export to Excel</v-btn>
-    </div>
   </div>
 </template>
 <script>
@@ -87,7 +75,6 @@ export default {
       }
     }
   },
-
   methods: {
     exportExcel: function() {
       let data = XLSX.utils.json_to_sheet(this.datos.Agentes);
