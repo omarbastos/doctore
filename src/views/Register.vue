@@ -12,7 +12,7 @@
               alt="Vuetify Logo"
               class="shrink mr-2"
               contain
-              src="../assets/logo-white.png"
+              src="../assets/logoUC.svg"
               transition="scale-transition"
               width="40"
             />
@@ -89,6 +89,11 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn
+              @click="$router.push({ name: 'Master' })"
+              class="white--text"
+              color="#FF0000"
+            >Back</v-btn>
             <v-spacer />
             <v-btn @click="onSubmit" color="#FD9917">Registrar</v-btn>
           </v-card-actions>

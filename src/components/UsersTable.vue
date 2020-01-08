@@ -3,11 +3,13 @@
     <v-card-title>
       <v-text-field
         v-model="search"
+        prepend-icon="mdi-plus"
         append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
         @click:append-outer="exportExcel"
+        @click:prepend="$router.push({ name: 'register' })"
       >
         <template v-slot:append-outer>
           <download-excel
@@ -58,7 +60,9 @@ export default {
         filterable: true
       },
       { text: "Team", value: "grupo" },
+
       { text: "Asistencia", value: "asistencias" },
+      { text: "Tardias", value: "tardias" },
       { text: "Cargo", value: "level" },
       { text: "Ultima sesión", value: "lastSession" }
     ]

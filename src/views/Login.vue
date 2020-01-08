@@ -8,11 +8,11 @@
               alt="Vuetify Logo"
               class="shrink mr-2"
               contain
-              src="../assets/logo-white.png"
+              src="../assets/logoUC.svg"
               transition="scale-transition"
               width="40"
             />
-            <v-toolbar-title class="black--text">Fix4u Solutions</v-toolbar-title>
+            <v-toolbar-title class="black--text">Umana Consultants</v-toolbar-title>
           </v-toolbar>
           <v-card v-if="errors && errors.length">
             <v-card-text class="red--text" v-for="(err, index) of errors" :key="index">{{ err }}</v-card-text>
