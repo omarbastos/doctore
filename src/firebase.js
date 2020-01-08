@@ -28,6 +28,7 @@ const increment = firebase.firestore.FieldValue.increment(1);
 const db = firebase.firestore();
 const auth = firebase.auth();
 const currentUser = auth.currentUser;
+const incrementRS = firebase.firestore.FieldValue;
 
 // firebase collections
 const usersCollection = db.collection("users");
@@ -42,5 +43,6 @@ export {
   usersCollection,
   sessionsCollection,
   gruposCollection,
-  onChange
+  onChange,
+  incrementRS
 };

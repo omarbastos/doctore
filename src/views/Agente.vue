@@ -199,7 +199,8 @@ export default {
         })
         .then(() => this.pauseUp(totalTime));
       this.$firestore.user.update({
-        tardias: increment
+        tardias: increment,
+        UP: increment
       });
     },
     flagAi(totalTime) {
@@ -216,7 +217,8 @@ export default {
           this.aiText = "TARDIA POR ALMUERZO";
         });
       this.$firestore.user.update({
-        tardias: increment
+        tardias: increment,
+        AI: increment
       });
     },
 
@@ -233,7 +235,8 @@ export default {
           this.cf2Text = "TARDIA POR CAFE2";
         });
       this.$firestore.user.update({
-        tardias: increment
+        tardias: increment,
+        CF: increment
       });
     },
 
@@ -250,7 +253,8 @@ export default {
           this.cf1Text = "TARDIA POR CAFE1";
         });
       this.$firestore.user.update({
-        tardias: increment
+        tardias: increment,
+        CF: increment
       });
     },
     pauseUp(totalTime) {

@@ -45,7 +45,10 @@ export default {
     json_fields: {
       Agentes: "fullname",
       Team: "grupo",
-      Tardias: "tardias",
+      "Sumatoria Tardias": "tardias",
+      "Tardias UP": "UP",
+      "Tardias CF": "CF",
+      "Tardias AI": "AI",
       Asistencia: "asistencias",
       Cargo: "level",
       "Ultima sesión": "lastSession"
@@ -60,7 +63,11 @@ export default {
         filterable: true
       },
       { text: "Team", value: "grupo" },
-      { text: "Tardias", value: "tardias" },
+      { text: "Sumatoria Tardias", value: "tardias" },
+      { text: "Tardias UP", value: "UP" },
+      { text: "Tardias UP", value: "AI" },
+      { text: "Tardias CF", value: "CF" },
+      { text: "Tardias Llegada", value: "llegada" },
       { text: "Asistencia", value: "asistencias" },
       { text: "Cargo", value: "level" },
       { text: "Ultima sesión", value: "lastSession" }

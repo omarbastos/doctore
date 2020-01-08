@@ -221,20 +221,37 @@ export default new Vuex.Store({
           })
           .then(
             docRef => {
-              dispatch("GUARDAR_SESION", docRef.id).then(() =>
-                db
-                  .collection("users")
-                  .doc(getters.uid)
-                  .update({
-                    lastSession: moment(fecha).format("MMM Do YY"),
-                    lastSessionID: docRef.id,
-                    asistencias: increment,
-                    tardias: flagLlegada ? 1 : 0
-                  })
-                  .then(() => {
-                    resolve();
-                  })
-              );
+              if (flagLlegada) {
+                dispatch("GUARDAR_SESION", docRef.id).then(() =>
+                  db
+                    .collection("users")
+                    .doc(getters.uid)
+                    .update({
+                      lastSession: moment(fecha).format("MMM Do YY"),
+                      lastSessionID: docRef.id,
+                      asistencias: increment,
+                      tardias: increment,
+                      llegada: increment
+                    })
+                    .then(() => {
+                      resolve();
+                    })
+                );
+              } else {
+                dispatch("GUARDAR_SESION", docRef.id).then(() =>
+                  db
+                    .collection("users")
+                    .doc(getters.uid)
+                    .update({
+                      lastSession: moment(fecha).format("MMM Do YY"),
+                      lastSessionID: docRef.id,
+                      asistencias: increment
+                    })
+                    .then(() => {
+                      resolve();
+                    })
+                );
+              }
             },
             error => {
               reject(error);
@@ -255,6 +272,11 @@ export default new Vuex.Store({
             level: register.level.state,
             grupo: register.grupo,
             pausas: 0,
+            llegada: 0,
+            UP: 0,
+            AI: 0,
+            CF: 0,
+            RS: 0,
             asistencias: 0,
             createdAt: moment(new Date()).format(),
             lastSession: null, // Fecha de la ultima sesión para comparar si tiene o no una sesión hoy
