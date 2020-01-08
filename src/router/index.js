@@ -16,19 +16,15 @@ const routes = [
     name: "Agente",
     component: Agente,
     beforeEnter: (to, from, next) => {
-      if (store.getters.isLoggedIn && store.getters.isAgente) {
-        if (store.getters.isSessionToday) {
-          next();
-          return;
-        } else {
-          store.dispatch("CREAR_SESION").then(() => {
-            next();
-            return;
-          });
-        }
-      } else {
-        next({ name: "login" });
+      if (
+        store.getters.isLoggedIn &&
+        store.getters.isAgente &&
+        store.getters.isSessionToday
+      ) {
+        next();
         return;
+      } else {
+        store.dispatch("SIGN_OUT").then(() => next({ name: "login" }));
       }
     }
   },
