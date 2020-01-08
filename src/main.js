@@ -16,9 +16,9 @@ import Vuesax from "vuesax";
 import "ant-design-vue/dist/antd.css";
 import "vuesax/dist/vuesax.css"; //Vuesax styles
 
-import JsonExcel from 'vue-json-excel'
+import JsonExcel from "vue-json-excel";
 
-Vue.component('downloadExcel', JsonExcel)
+Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuesax, {
   // options here
 });
@@ -52,8 +52,14 @@ new Vue({
   router,
   store,
   vuetify,
+
   created() {
     AOS.init();
+    if (
+      !(localStorage.getItem("lastSession") == moment().format("MMM Do YY"))
+    ) {
+      store.dispatch("SIGN_OUT").then(() => router.push({ name: "login" }));
+    }
   },
   render: h => h(App)
 }).$mount("#app");
