@@ -13,7 +13,7 @@
         <template v-slot:append-outer>
           <v-menu style="top: -12px" offset-y>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on">
+              <v-btn color="#fc9a3a" v-on="on">
                 <v-icon left>mdi-menu</v-icon>
                 MENU
               </v-btn>

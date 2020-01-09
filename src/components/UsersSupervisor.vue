@@ -7,20 +7,38 @@
         label="Search"
         single-line
         hide-details
-        prepend-icon="mdi-pdf-box"
-        @click:prepend="exportPDF"
         @click:append-outer="exportExcel"
       >
         <template v-slot:append-outer>
-          <download-excel
-            class="btn btn-default"
-            :data="usersFiltradas"
-            :fields="json_fields"
-            worksheet="My Worksheet"
-            :name="todayExcel"
-          >
-            <v-icon color="#FC9A3A">mdi-file-excel</v-icon>
-          </download-excel>
+          <v-menu style="top: -12px" offset-y>
+            <template v-slot:activator="{ on }">
+              <v-btn color="#fc9a3a" v-on="on">
+                <v-icon left>mdi-menu</v-icon>
+                MENU
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-text class="pa-6">
+                <download-excel
+                  class="btn btn-default"
+                  :data="users"
+                  :fields="json_fields"
+                  worksheet="My Worksheet"
+                  :name="todayExcel"
+                >
+                  <v-btn large flat @click="exportExcel"
+                    ><v-icon color="#FC9A3A" left>mdi-file-excel</v-icon
+                    >Exportar como Excel</v-btn
+                  >
+                </download-excel>
+                <br />
+                <v-btn large flat @click="exportPDF"
+                  ><v-icon color="#FC9A3A" left>mdi-pdf-box</v-icon>Exportar
+                  como PDF</v-btn
+                >
+              </v-card-text>
+            </v-card>
+          </v-menu>
         </template>
       </v-text-field>
     </v-card-title>
