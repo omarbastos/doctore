@@ -55,10 +55,12 @@ new Vue({
 
   created() {
     AOS.init();
-    if (
-      !(localStorage.getItem("lastSession") == moment().format("MMM Do YY"))
-    ) {
-      store.dispatch("SIGN_OUT").then(() => router.push({ name: "login" }));
+    if (localStorage.getItem("userLevel") === "Agente") {
+      if (
+        !(localStorage.getItem("lastSession") == moment().format("MMM Do YY"))
+      ) {
+        store.dispatch("SIGN_OUT").then(() => router.push({ name: "login" }));
+      }
     }
   },
   render: h => h(App)
