@@ -8,19 +8,38 @@
         label="Search"
         single-line
         hide-details
-        @click:append-outer="exportExcel"
         @click:prepend="$router.push({ name: 'register' })"
       >
         <template v-slot:append-outer>
-          <download-excel
-            class="btn btn-default"
-            :data="users"
-            :fields="json_fields"
-            worksheet="My Worksheet"
-            name="filename.xls"
-          >
-            <v-icon color="#FC9A3A">mdi-file-excel</v-icon>
-          </download-excel>
+          <v-menu style="top: -12px" offset-y>
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on">
+                <v-icon left>mdi-menu</v-icon>
+                MENU
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-text class="pa-6">
+                <download-excel
+                  class="btn btn-default"
+                  :data="users"
+                  :fields="json_fields"
+                  worksheet="My Worksheet"
+                  :name="todayExcel"
+                >
+                  <v-btn large flat @click="exportExcel"
+                    ><v-icon color="#FC9A3A" left>mdi-file-excel</v-icon
+                    >Exportar como Excel</v-btn
+                  >
+                </download-excel>
+                <br />
+                <v-btn large flat @click="exportPDF"
+                  ><v-icon color="#FC9A3A" left>mdi-pdf-box</v-icon>Exportar
+                  como PDF</v-btn
+                >
+              </v-card-text>
+            </v-card>
+          </v-menu>
         </template>
       </v-text-field>
     </v-card-title>
@@ -35,6 +54,8 @@
   </v-card>
 </template>
 <script>
+import * as jsPDF from "jspdf";
+import "jspdf-autotable";
 import moment from "moment";
 import XLSX from "xlsx";
 import { usersCollection } from "../firebase";
@@ -46,11 +67,25 @@ export default {
     json_fields: {
       Agentes: "fullname",
       Team: "grupo",
-      Tardias: "tardias",
+      "Sumatoria Tardias": "tardias",
+      "Tardias UP": "UP",
+      "Tardias CF": "CF",
+      "Tardias AI": "AI",
       Asistencia: "asistencias",
       Cargo: "level",
       "Ultima sesión": "lastSession"
     },
+    columns: [
+      { title: "Agentes", dataKey: "fullname" },
+      { title: "Team", dataKey: "grupo" },
+      { title: "Sumatoria Tardias", dataKey: "tardias" },
+      { title: "Tardias UP", dataKey: "UP" },
+      { title: "Tardias AI", dataKey: "AI" },
+      { title: "Tardias CF", dataKey: "CF" },
+      { title: "Asistencia", dataKey: "asistencias" },
+      { title: "Cargo", dataKey: "level" },
+      { title: "Ultima sesión", dataKey: "lastSession" }
+    ],
     headers: [
       {
         text: "Agentes",
@@ -60,9 +95,13 @@ export default {
         filterable: true
       },
       { text: "Team", value: "grupo" },
-
+      { text: "Sumatoria Tardias", value: "tardias" },
+      { text: "Tardias UP", value: "UP" },
+      { text: "Tardias UP", value: "AI" },
+      { text: "Tardias CF", value: "CF" },
+      { text: "Tardias CF", value: "CF" },
+      { text: "Tardias Llegada", value: "llegada" },
       { text: "Asistencia", value: "asistencias" },
-      { text: "Tardias", value: "tardias" },
       { text: "Cargo", value: "level" },
       { text: "Ultima sesión", value: "lastSession" }
     ]
@@ -78,7 +117,13 @@ export default {
       users: usersCollection
     };
   },
-  computed: {},
+  computed: {
+    todayExcel() {
+      let today = moment().unix();
+      let retorno = `Master${today}.xls`;
+      return retorno;
+    }
+  },
   methods: {
     exportExcel: function() {
       let data = XLSX.utils.json_to_sheet(this.datos.Agentes);
@@ -88,7 +133,24 @@ export default {
       XLSX.utils.book_append_sheet(workbook, data, filename);
       XLSX.writeFile(workbook, `${filename}.xlsx`);
     },
-
+    exportPDF() {
+      let today = moment().unix();
+      let pdfName = `${this.$store.getters.userGrupo}${today}`;
+      const doc = new jsPDF("l", "pt");
+      doc.text("Umana Consultants: Reporte de Usuarios", 40, 40);
+      doc.autoTable(this.columns, this.users, {
+        theme: "grid",
+        styles: {
+          halign: "center",
+          cellWidth: "wrap"
+        },
+        headStyles: {
+          fillColor: "#fc9a3a"
+        },
+        margin: { top: 60 }
+      });
+      doc.save(pdfName + ".pdf");
+    },
     selectAgent(item) {
       this.$emit("user-selected", item);
     }

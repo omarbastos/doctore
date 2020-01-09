@@ -4,7 +4,7 @@
       {{ text }}
       <v-btn color="orange" text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-    <v-container v-if="!showGrupo" class="col-md-6" elevation="24">
+    <v-container v-if="!showGrupo" class="col-md-10" elevation="24">
       <v-row justify="center" align="center">
         <v-col cols="8">
           <v-subheader>Grupos de Trabajo de Umana Consultants</v-subheader>
@@ -27,22 +27,30 @@
           </v-btn>
         </v-col>
       </v-row>
-      <users-table @user-selected="agentfromData"></users-table>
+      <v-container v-if="showNewGrupo">
+        <v-row justify="center">
+          <v-col cols="6">
+            <v-text-field
+              label="Crear nuevo grupo de trabajo"
+              outlined
+              v-model="newGrupo"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="1">
+            <v-btn @click="enviarGrupo" block dark color="red">CREAR</v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-container>
-
-    <v-container v-if="showNewGrupo">
-      <v-row justify="center">
-        <v-col cols="6">
-          <v-text-field label="Crear nuevo grupo de trabajo" outlined v-model="newGrupo"></v-text-field>
-        </v-col>
-        <v-col cols="1">
-          <v-btn @click="enviarGrupo" block dark color="red">CREAR</v-btn>
-        </v-col>
-      </v-row>
+    <v-container v-if="!showGrupo">
+      <users-table @user-selected="agentfromData"></users-table>
     </v-container>
     <div v-if="showGrupo">
       <v-row justify="center" align="center" v-if="!showHistorico">
-        <resumen-disponibilidad :series="series" data-aos="zoom-in"></resumen-disponibilidad>
+        <resumen-disponibilidad
+          :series="series"
+          data-aos="zoom-in"
+        ></resumen-disponibilidad>
       </v-row>
 
       <historico-llegada
