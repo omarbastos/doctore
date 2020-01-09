@@ -135,7 +135,7 @@ export default {
     },
     exportPDF() {
       let today = moment().unix();
-      let pdfName = `${this.$store.getters.userGrupo}${today}`;
+      let pdfName = `Master${today}`;
       const doc = new jsPDF("l", "pt");
       doc.text("Umana Consultants: Reporte de Usuarios", 40, 40);
       doc.autoTable(this.columns, this.users, {
