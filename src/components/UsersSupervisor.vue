@@ -130,9 +130,13 @@ export default {
       const doc = new jsPDF("l", "pt");
       doc.text("Umana Consultants: Reporte de Usuarios", 40, 40);
       doc.autoTable(this.columns, this.usersFiltradas, {
+        theme: "grid",
         styles: {
           halign: "center",
           cellWidth: "wrap"
+        },
+        headStyles: {
+          fillColor: "#fc9a3a"
         },
         margin: { top: 60 }
       });

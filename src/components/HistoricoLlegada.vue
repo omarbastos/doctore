@@ -16,8 +16,12 @@
             </thead>
             <tbody>
               <tr>
-                <td class="text-center font-weight-bold">{{ user.fullname }}</td>
-                <td class="text-center font-weight-bold">{{ user.asistencias }}</td>
+                <td class="text-center font-weight-bold">
+                  {{ user.fullname }}
+                </td>
+                <td class="text-center font-weight-bold">
+                  {{ user.asistencias }}
+                </td>
                 <td class="text-center font-weight-bold">{{ tardias }}</td>
               </tr>
             </tbody>
@@ -29,7 +33,12 @@
     <v-divider></v-divider>
 
     <div id="chart">
-      <apexchart type="bar" height="350" :options="chartOptions" :series="serias" />
+      <apexchart
+        type="bar"
+        height="700"
+        :options="chartOptions"
+        :series="serias"
+      />
     </div>
     <v-divider></v-divider>
 
@@ -125,7 +134,7 @@ export default {
         UP.flag ? moment(UP.finishedAt).diff(UP.flagAt, "minutes") : 0
       ]);
       let objLlegada = {
-        name: "llegada",
+        name: "Tardia por Llegada",
         data: []
       };
       objLlegada.data = this.historicoSessions.map(({ llegada }) => [
@@ -207,7 +216,7 @@ export default {
         },
         tickAmount: 2,
         min: 0,
-        max: 60
+        max: 300
       },
       fill: {
         opacity: 1
