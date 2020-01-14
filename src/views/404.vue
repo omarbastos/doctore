@@ -33,7 +33,7 @@ export default {};
 
 .page_404 {
   background-color: white;
-  padding: 40px 0;
+  padding: 20px 0;
 }
 
 .page_404 img {
@@ -41,8 +41,8 @@ export default {};
 }
 
 .four_zero_four_bg {
-  background-image: url("../assets/dribbble_1.gif");
-  height: 400px;
+  background-image: url("../assets/source.gif");
+  height: 450px;
   background-position: center;
 }
 
@@ -58,10 +58,10 @@ export default {};
   color: #fff !important;
   padding: 10px 20px;
   background: #39ac31;
-  margin: 20px 0;
+  margin: 0px 0;
   display: inline-block;
 }
 .contant_box_404 {
-  margin-top: -50px;
+  margin-top: -100px;
 }
 </style>
