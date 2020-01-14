@@ -179,7 +179,7 @@ export default new Vuex.Store({
               startedAt: null,
               flagAt: null,
               finishedAt: null,
-              totalTime: 2700,
+              totalTime: 3600,
               disable: false
             },
             UP: {

@@ -12,7 +12,7 @@
               alt="Vuetify Logo"
               class="shrink mr-2"
               contain
-              src="../assets/logoUC.svg"
+              src="../assets/logo-white.png"
               transition="scale-transition"
               width="40"
             />
